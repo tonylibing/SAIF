@@ -1,7 +1,82 @@
 #include "stdafx.h"
 #include "lib.h"
 
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+	std::stringstream ss(s);
+	std::string item;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
 
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::vector<std::string> elems;
+	split(s, delim, elems);
+	return elems;
+}
+
+//获取所有证券的代码
+void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
+{
+	fstream fcin(fileName, fstream::in);
+	if (!fcin.is_open())
+	{
+		return;
+	}
+	string line;
+	getline(fcin, line);
+	while (getline(fcin, line))
+	{
+		vector<string> tokens = split(line, ';');
+		StockTicker stockTiker;
+		stockTiker.stockCode = tokens[0];
+		stockTiker.stockName = tokens[1];
+		stockTiker.boardDay  = atoi((tokens[2].substr(0, 4) + tokens[2].substr(5, 7) + tokens[2].substr(9, 11)).c_str());
+		vec.push_back(stockTiker);
+	}
+	fcin.close();
+	fstream fcout("ticker_list.txt", fstream::out);
+	for_each(vec.begin(), vec.end(), [&fcout](const StockTicker& stockTicker){
+		fcout<<stockTicker.stockCode.substr(0, 6)<<endl;
+	});
+	fcout.close();
+}
+
+//请求代码表
+vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
+{
+	TDBDefine_Code* pCodetable = NULL;
+	int pCount;
+	bool outPutTable = false;
+	int ret = TDB_GetCodeTable(hTdb, szMarket, &pCodetable, &pCount);
+
+	vector<TDBDefine_Code> res;
+
+	if (ret == TDB_NO_DATA)
+	{
+		printf("无代码表！");
+		return res;
+	}
+	printf("---------------------------Code Table--------------------\n");
+	printf("收到代码表项数：%d\n",pCount);
+	
+	for (int i=0;i<pCount;i++)
+	{
+		if(pCodetable[i].nType != 0x10)
+			continue;
+		/*printf("万得代码 chWindCode:%s \n", pCodetable[i].chWindCode);	
+		printf("交易所代码 chWindCode:%s \n", pCodetable[i].chCode);			
+		printf("市场代码 chWindCode:%s \n", pCodetable[i].chMarket);
+		printf("证券中文名称 chWindCode:%s \n", pCodetable[i].chCNName);
+		printf("证券英文名称 chWindCode:%s \n", pCodetable[i].chENName);
+		printf("证券类型 chWindCode:%d \n", pCodetable[i].nType);
+		printf("----------------------------------------\n");*/
+		res.push_back(pCodetable[i]);
+	}
+	cout<<res.size()<<endl;
+	return res;
+}
 //登录
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord)
 {

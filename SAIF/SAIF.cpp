@@ -9,7 +9,7 @@
 #include <map>
 #include <iostream>
 using namespace std;
-
+static fstream fcout("result.txt", fstream::out);
 OrderType checkOrderType(int value)
 {
 	if(value > BIGGER)
@@ -38,11 +38,11 @@ void calBuyAndSellValue(Order& order)
 		}
 	}
 }
-void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap)
+void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap, const string& windName)
 {
 	map<int, vector<TDBDefine_Transaction>>::iterator iter = allTransMap.begin();
 	
-	for(; iter != allTransMap.end(); iter++)
+	for(;iter != allTransMap.end(); iter++)
 	{
 		Order bigger, big, medium, low;
 		int key = iter->first;
@@ -76,7 +76,9 @@ void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap
 		calBuyAndSellValue(big);
 		calBuyAndSellValue(medium);
 		calBuyAndSellValue(low);
-		cout<<key<<" "<<"("<<bigger.buyValue<<", "<<bigger.sellValue<<")"<<" "<<"("<<big.buyValue<<", "<<big.sellValue<<")"<<" "<<"("<<medium.buyValue<<", "<<medium.sellValue<<")"<<" "<<"("<<low.buyValue<<", "<<low.sellValue<<")"<<endl;
+		
+		fcout<<windName<<";";
+		fcout<<key<<";"<<bigger.buyValue<<";"<<bigger.sellValue<<";"<<big.buyValue<<";"<<big.sellValue<<";"<<medium.buyValue<<";"<<medium.sellValue<<";"<<low.buyValue<<";"<<low.sellValue<<endl;
 	}
 }
 int _tmain(int argc, _TCHAR* argv[])
@@ -87,12 +89,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	string passWord  = "19860968";
 
 	THANDLE hTdb = logIn(ipAddress, port, userName, passWord);
-
+	//GetAllStockTikers(allStockTikers, "ticker list.csv");
 	if (hTdb)
 	{
-		GetKData(hTdb, "600000.SH", "SH-2-0", 20160520, 20160520, CYC_DAY, 0, 0, 0);
+		vector<TDBDefine_Code> allStocks = GetCodeTable(hTdb, "SH-2-0");
+		vector<TDBDefine_Code> szStocks  = GetCodeTable(hTdb, "SZ-2-0");
+		allStocks.insert(allStocks.end(), szStocks.begin(), szStocks.end());
+		for (auto iter = allStocks.begin(); iter != allStocks.end(); iter++)
+		{
+			map<int, vector<TDBDefine_Transaction>> allTransMap;
+			if (string(iter->chWindCode).find(".SH") != string::npos)
+			{
+				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SH-2-0", 20160523);
+			}
+			else
+			{
+				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SZ-2-0", 20160523);
+			}
+			 anslyseAllTransactions(allTransMap, iter->chWindCode);
+		}
+		/*GetKData(hTdb, "600000.SH", "SH-2-0", 20160520, 20160520, CYC_DAY, 0, 0, 0);
 		map<int, vector<TDBDefine_Transaction>> allTransMap = GetAllTransactions(hTdb, "600000.SH", "SH-2-0", 20160520);
-		anslyseAllTransactions(allTransMap);
+		anslyseAllTransactions(allTransMap);*/
 		//GetTickData(hTdb, "600000.SH", "SH-2-0", 20160517);
 		//GetTransaction(hTdb, "600000.SH", "SH-2-0", 20160310);
 	}

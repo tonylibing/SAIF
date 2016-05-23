@@ -1,12 +1,16 @@
+#ifndef __LIB_H__
+#define __LIB_H__
+
 #include "TDBAPI.h"
 #include <iostream>
+#include <algorithm>
+#include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <map>
 using namespace std;
 
-static int ErrNum = 0;
-static char ErrCode[100][10] = {0};
 #define ELEMENT_COUNT(arr) (sizeof(arr)/sizeof(*arr))
 #define BIGGER  1000000
 #define BIG     200000
@@ -22,9 +26,29 @@ typedef struct Order
 
 } Order;
 
+typedef struct StockTicker 
+{
+	string stockCode; //证券代码
+	string stockName; //证券简称
+	int    boardDay;  //上市日期
+}StockTicker;
+
+
+static vector<StockTicker> allStockTikers;
+static int ErrNum = 0;
+static char ErrCode[100][10] = {0};
+
+
+
 string int2str(int n);
 string array2str(const int* arr, int len);
 bool isValidDay(int date);
+
+//获取所有证券的代码
+void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
+
+//请求代码表
+vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket);
 
 //登录
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord);
@@ -38,3 +62,6 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 
 //获取自上市日起所有的逐笔成交
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate);
+
+
+#endif
