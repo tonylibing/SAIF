@@ -16,7 +16,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return elems;
 }
 
-//»ñÈ¡ËùÓĞÖ¤È¯µÄ´úÂë
+//Â»Ã±ÃˆÂ¡Ã‹Ã¹Ã“ÃÃ–Â¤ÃˆÂ¯ÂµÃ„Â´ÃºÃ‚Ã«
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 {
 	fstream fcin(fileName, fstream::in);
@@ -43,8 +43,8 @@ void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 	fcout.close();
 }
 
-//ÇëÇó´úÂë±í
-vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
+//Ã‡Ã«Ã‡Ã³Â´ÃºÃ‚Ã«Â±Ã­
+void GetCodeTable(THANDLE hTdb, char* szMarket)
 {
 	TDBDefine_Code* pCodetable = NULL;
 	int pCount;
@@ -55,32 +55,32 @@ vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
 
 	if (ret == TDB_NO_DATA)
 	{
-		printf("ÎŞ´úÂë±í£¡");
+		printf("ÃÃÂ´ÃºÃ‚Ã«Â±Ã­Â£Â¡");
 		return res;
 	}
 	printf("---------------------------Code Table--------------------\n");
-	printf("ÊÕµ½´úÂë±íÏîÊı£º%d\n",pCount);
+	printf("ÃŠÃ•ÂµÂ½Â´ÃºÃ‚Ã«Â±Ã­ÃÃ®ÃŠÃ½Â£Âº%d\n",pCount);
 	
 	for (int i=0;i<pCount;i++)
 	{
 		if(pCodetable[i].nType != 0x10)
 			continue;
-		/*printf("ÍòµÃ´úÂë chWindCode:%s \n", pCodetable[i].chWindCode);	
-		printf("½»Ò×Ëù´úÂë chWindCode:%s \n", pCodetable[i].chCode);			
-		printf("ÊĞ³¡´úÂë chWindCode:%s \n", pCodetable[i].chMarket);
-		printf("Ö¤È¯ÖĞÎÄÃû³Æ chWindCode:%s \n", pCodetable[i].chCNName);
-		printf("Ö¤È¯Ó¢ÎÄÃû³Æ chWindCode:%s \n", pCodetable[i].chENName);
-		printf("Ö¤È¯ÀàĞÍ chWindCode:%d \n", pCodetable[i].nType);
+		/*printf("ÃÃ²ÂµÃƒÂ´ÃºÃ‚Ã« chWindCode:%s \n", pCodetable[i].chWindCode);	
+		printf("Â½Â»Ã’Ã—Ã‹Ã¹Â´ÃºÃ‚Ã« chWindCode:%s \n", pCodetable[i].chCode);			
+		printf("ÃŠÃÂ³Â¡Â´ÃºÃ‚Ã« chWindCode:%s \n", pCodetable[i].chMarket);
+		printf("Ã–Â¤ÃˆÂ¯Ã–ÃÃÃ„ÃƒÃ»Â³Ã† chWindCode:%s \n", pCodetable[i].chCNName);
+		printf("Ã–Â¤ÃˆÂ¯Ã“Â¢ÃÃ„ÃƒÃ»Â³Ã† chWindCode:%s \n", pCodetable[i].chENName);
+		printf("Ã–Â¤ÃˆÂ¯Ã€Ã ÃÃ chWindCode:%d \n", pCodetable[i].nType);
 		printf("----------------------------------------\n");*/
-		res.push_back(pCodetable[i]);
+		Stock stock;
+		stock.tdbCode = pCodetable[i];
+		allStocks.push_back(stock);
 	}
-	cout<<res.size()<<endl;
-	return res;
 }
-//µÇÂ¼
+//ÂµÃ‡Ã‚Â¼
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord)
 {
-	//ÉèÖÃ·şÎñÆ÷ĞÅÏ¢
+	//Ã‰Ã¨Ã–ÃƒÂ·Ã¾ÃÃ±Ã†Ã·ÃÃ…ÃÂ¢
 	OPEN_SETTINGS settings = {0};
 	strcpy(settings.szIP, ipAddress.c_str());
 	sprintf(settings.szPort, "%d", port);
@@ -96,10 +96,10 @@ THANDLE logIn(const string& ipAddress, int port, const string& userName, const s
 
 	if (hTdb)
 	{
-		printf("µÇÂ¼³É¹¦!\n");
+		printf("ÂµÃ‡Ã‚Â¼Â³Ã‰Â¹Â¦!\n");
 		return hTdb;
 	}
-	printf("µÇÂ¼Ê§°Ü!\n");
+	printf("ÂµÃ‡Ã‚Â¼ÃŠÂ§Â°Ãœ!\n");
 	return NULL;
 }
 
@@ -114,46 +114,46 @@ bool isValidDay(int date)
 void showTranscation(const TDBDefine_Transaction& trans)
 {
 	printf("---------------------------------------Transaction Data------------------------------------------\n");
-	printf("³É½»Ê±¼ä(Date): %d \n", trans.nDate);
-	printf("³É½»Ê±¼ä: %d \n", trans.nTime);
-	printf("³É½»´úÂë: %c \n", trans.chFunctionCode);
-	printf("Î¯ÍĞÀà±ğ: %c \n", trans.chOrderKind);
-	printf("BS±êÖ¾: %c \n", trans.chBSFlag);
-	printf("³É½»¼Û¸ñ: %d \n", trans.nTradePrice);
-	printf("³É½»ÊıÁ¿: %d \n", trans.nTradeVolume);
-	printf("½ĞÂôĞòºÅ: %d \n", trans.nAskOrder);
-	printf("½ĞÂòĞòºÅ: %d \n", trans.nBidOrder);
-	printf("³É½»±àºÅ: %d \n", trans.nIndex);
+	printf("Â³Ã‰Â½Â»ÃŠÂ±Â¼Ã¤(Date): %d \n", trans.nDate);
+	printf("Â³Ã‰Â½Â»ÃŠÂ±Â¼Ã¤: %d \n", trans.nTime);
+	printf("Â³Ã‰Â½Â»Â´ÃºÃ‚Ã«: %c \n", trans.chFunctionCode);
+	printf("ÃÂ¯ÃÃÃ€Ã Â±Ã°: %c \n", trans.chOrderKind);
+	printf("BSÂ±ÃªÃ–Â¾: %c \n", trans.chBSFlag);
+	printf("Â³Ã‰Â½Â»Â¼Ã›Â¸Ã±: %d \n", trans.nTradePrice);
+	printf("Â³Ã‰Â½Â»ÃŠÃ½ÃÂ¿: %d \n", trans.nTradeVolume);
+	printf("Â½ÃÃ‚Ã´ÃÃ²ÂºÃ…: %d \n", trans.nAskOrder);
+	printf("Â½ÃÃ‚Ã²ÃÃ²ÂºÃ…: %d \n", trans.nBidOrder);
+	printf("Â³Ã‰Â½Â»Â±Ã ÂºÃ…: %d \n", trans.nIndex);
 	printf("------------------------------------------------------\n");
 }
-//»ñÈ¡KÏß
+//Â»Ã±ÃˆÂ¡KÃÃŸ
 void GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycle, int nUserDef, int nCQFlag, int nAutoComplete)
 {
-	//ÇëÇóKÏß
+	//Ã‡Ã«Ã‡Ã³KÃÃŸ
 	TDBDefine_ReqKLine* req = new TDBDefine_ReqKLine;
 	strncpy(req->chCode, szCode, ELEMENT_COUNT(req->chCode));
 	strncpy(req->chMarketKey, szMarket, ELEMENT_COUNT(req->chMarketKey));
 
-	req->nCQFlag = (REFILLFLAG)nCQFlag;//³ıÈ¨±êÖ¾£¬ÓÉÓÃ»§¶¨Òå
-	req->nBeginDate = nBeginDate;//¿ªÊ¼ÈÕÆÚ
-	req->nEndDate = nEndDate;//½áÊøÈÕÆÚ
-	req->nBeginTime = 0;//¿ªÊ¼Ê±¼ä
-	req->nEndTime = 0;//½áÊøÊ±¼ä
+	req->nCQFlag = (REFILLFLAG)nCQFlag;//Â³Ã½ÃˆÂ¨Â±ÃªÃ–Â¾Â£Â¬Ã“Ã‰Ã“ÃƒÂ»Â§Â¶Â¨Ã’Ã¥
+	req->nBeginDate = nBeginDate;//Â¿ÂªÃŠÂ¼ÃˆÃ•Ã†Ãš
+	req->nEndDate = nEndDate;//Â½Ã¡ÃŠÃ¸ÃˆÃ•Ã†Ãš
+	req->nBeginTime = 0;//Â¿ÂªÃŠÂ¼ÃŠÂ±Â¼Ã¤
+	req->nEndTime = 0;//Â½Ã¡ÃŠÃ¸ÃŠÂ±Â¼Ã¤
 
 	req->nCycType = (CYCTYPE)nCycle;
 	req->nCycDef = 0;
 
-	//·µ»Ø½á¹¹ÌåÖ¸Õë
+	//Â·ÂµÂ»Ã˜Â½Ã¡Â¹Â¹ÃŒÃ¥Ã–Â¸Ã•Ã«
 	TDBDefine_KLine* kLine = NULL;
-	//·µ»ØÊı
+	//Â·ÂµÂ»Ã˜ÃŠÃ½
 	int pCount;
-	//APIÇëÇóKÏß
+	//APIÃ‡Ã«Ã‡Ã³KÃÃŸ
 	TDB_GetKLine(hTdb,req,&kLine,&pCount);
 	delete req;
 	req = NULL;
 
 	printf("---------------------------K Data--------------------\n");
-	printf("Êı¾İÌõÊı£º%d,´òÓ¡ 1/100 Ìõ\n\n",pCount);
+	printf("ÃŠÃ½Â¾ÃÃŒÃµÃŠÃ½Â£Âº%d,Â´Ã²Ã“Â¡ 1/100 ÃŒÃµ\n\n",pCount);
 	for(int i=0;i<pCount;)
 	{
 		printf("WindCode:%s\n Code:%s\n Date:%d\n Time:%d\n Open:%d\n High:%d\n Low:%d\n Close:%d\n Volume:%I64d\n Turover:%I64d\n MatchItem:%d\n Interest:%d\n",
@@ -161,16 +161,16 @@ void GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nE
 			kLine[i].iVolume,kLine[i].iTurover,kLine[i].nMatchItems,kLine[i].nInterest);
 		i +=100;
 	}
-	//ÊÍ·Å
+	//ÃŠÃÂ·Ã…
 	TDB_Free(kLine);
 }
 
-//´øÂòÂôÅÌµÄtick
+//Â´Ã¸Ã‚Ã²Ã‚Ã´Ã…ÃŒÂµÃ„tick
 void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate)
 {
-	//ÇëÇóĞÅÏ¢
+	//Ã‡Ã«Ã‡Ã³ÃÃ…ÃÂ¢
 	TDBDefine_ReqTick req = {0};
-	strncpy(req.chCode, szCode, sizeof(req.chCode)); //´úÂëĞ´³ÉÄãÏë»ñÈ¡µÄ¹ÉÆ±´úÂë
+	strncpy(req.chCode, szCode, sizeof(req.chCode)); //Â´ÃºÃ‚Ã«ÃÂ´Â³Ã‰Ã„Ã£ÃÃ«Â»Ã±ÃˆÂ¡ÂµÃ„Â¹Ã‰Ã†Â±Â´ÃºÃ‚Ã«
 	strncpy(req.chMarketKey, szMarket, sizeof(req.chMarketKey));
 	req.nDate = nDate;
 	req.nBeginTime = 0;
@@ -181,63 +181,63 @@ void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate)
 	int ret = TDB_GetTick(hTdb,&req,&pTick, &pCount);
 
 	printf("---------------------------------------Tick Data------------------------------------------\n");
-	printf("¹²ÊÕµ½ %d ÌõTickÊı¾İ£¬ ´òÓ¡ 1/100 Ìõ£º\n", pCount);
+	printf("Â¹Â²ÃŠÃ•ÂµÂ½ %d ÃŒÃµTickÃŠÃ½Â¾ÃÂ£Â¬ Â´Ã²Ã“Â¡ 1/100 ÃŒÃµÂ£Âº\n", pCount);
 
 	for(int i=0; i<pCount;)
 	{
 		TDBDefine_Tick& pTickCopy = pTick[i];
-		printf("ÍòµÃ´úÂë chWindCode:%s \n", pTickCopy.chWindCode);
-		printf("ÈÕÆÚ nDate:%d \n", pTickCopy.nDate);
-		printf("Ê±¼ä nTime:%d \n", pTickCopy.nTime);
+		printf("ÃÃ²ÂµÃƒÂ´ÃºÃ‚Ã« chWindCode:%s \n", pTickCopy.chWindCode);
+		printf("ÃˆÃ•Ã†Ãš nDate:%d \n", pTickCopy.nDate);
+		printf("ÃŠÂ±Â¼Ã¤ nTime:%d \n", pTickCopy.nTime);
 
-		printf("³É½»¼Û nPrice:%d \n", pTickCopy.nPrice);
-		printf("³É½»Á¿ iVolume:%I64d \n", pTickCopy.iVolume);
-		printf("³É½»¶î(Ôª) iTurover:%I64d \n", pTickCopy.iTurover);
-		printf("³É½»±ÊÊı nMatchItems:%d \n", pTickCopy.nMatchItems);
+		printf("Â³Ã‰Â½Â»Â¼Ã› nPrice:%d \n", pTickCopy.nPrice);
+		printf("Â³Ã‰Â½Â»ÃÂ¿ iVolume:%I64d \n", pTickCopy.iVolume);
+		printf("Â³Ã‰Â½Â»Â¶Ã®(Ã”Âª) iTurover:%I64d \n", pTickCopy.iTurover);
+		printf("Â³Ã‰Â½Â»Â±ÃŠÃŠÃ½ nMatchItems:%d \n", pTickCopy.nMatchItems);
 		printf(" nInterest:%d \n", pTickCopy.nInterest);
 
-		printf("³É½»±êÖ¾: chTradeFlag:%c \n", pTickCopy.chTradeFlag);
-		printf("BS±êÖ¾: chBSFlag:%c \n", pTickCopy.chBSFlag);
-		printf("µ±ÈÕ³É½»Á¿: iAccVolume:%I64d \n", pTickCopy.iAccVolume);
-		printf("µ±ÈÕ³É½»¶î: iAccTurover:%I64d \n", pTickCopy.iAccTurover);
+		printf("Â³Ã‰Â½Â»Â±ÃªÃ–Â¾: chTradeFlag:%c \n", pTickCopy.chTradeFlag);
+		printf("BSÂ±ÃªÃ–Â¾: chBSFlag:%c \n", pTickCopy.chBSFlag);
+		printf("ÂµÂ±ÃˆÃ•Â³Ã‰Â½Â»ÃÂ¿: iAccVolume:%I64d \n", pTickCopy.iAccVolume);
+		printf("ÂµÂ±ÃˆÃ•Â³Ã‰Â½Â»Â¶Ã®: iAccTurover:%I64d \n", pTickCopy.iAccTurover);
 
-		printf("×î¸ß nHigh:%d \n", pTickCopy.nHigh);
-		printf("×îµÍ nLow:%d \n", pTickCopy.nLow);
-		printf("¿ªÅÌ nOpen:%d \n", pTickCopy.nOpen);
-		printf("Ç°ÊÕÅÌ nPreClose:%d \n", pTickCopy.nPreClose);
+		printf("Ã—Ã®Â¸ÃŸ nHigh:%d \n", pTickCopy.nHigh);
+		printf("Ã—Ã®ÂµÃ nLow:%d \n", pTickCopy.nLow);
+		printf("Â¿ÂªÃ…ÃŒ nOpen:%d \n", pTickCopy.nOpen);
+		printf("Ã‡Â°ÃŠÃ•Ã…ÃŒ nPreClose:%d \n", pTickCopy.nPreClose);
 
-		//ÂòÂôÅÌ×Ö¶Î
+		//Ã‚Ã²Ã‚Ã´Ã…ÃŒÃ—Ã–Â¶Ã
 		std::string strOut= array2str(pTickCopy.nAskPrice,ELEMENT_COUNT(pTickCopy.nAskPrice));
-		printf("½ĞÂô¼Û nAskPrice:%s \n", strOut.c_str());
+		printf("Â½ÃÃ‚Ã´Â¼Ã› nAskPrice:%s \n", strOut.c_str());
 		strOut= array2str((const int*)pTickCopy.nAskVolume,ELEMENT_COUNT(pTickCopy.nAskVolume));
-		printf("½ĞÂôÁ¿ nAskVolume:%s \n", strOut.c_str());
+		printf("Â½ÃÃ‚Ã´ÃÂ¿ nAskVolume:%s \n", strOut.c_str());
 		strOut= array2str(pTickCopy.nBidPrice,ELEMENT_COUNT(pTickCopy.nBidPrice));
-		printf("½ĞÂò¼Û nBidPrice:%s \n", strOut.c_str());
+		printf("Â½ÃÃ‚Ã²Â¼Ã› nBidPrice:%s \n", strOut.c_str());
 		strOut= array2str((const int*)pTickCopy.nBidVolume,ELEMENT_COUNT(pTickCopy.nBidVolume));
-		printf("½ĞÂòÁ¿ nBidVolume:%s \n", strOut.c_str());
-		printf("¼ÓÈ¨Æ½¾ù½ĞÂô¼Û nAskAvPrice:%d \n", pTickCopy.nAskAvPrice);
-		printf("¼ÓÈ¨Æ½¾ù½ĞÂò¼Û nBidAvPrice:%d \n", pTickCopy.nBidAvPrice);
-		printf("½ĞÂô×ÜÁ¿ iTotalAskVolume:%I64d \n", pTickCopy.iTotalAskVolume);
-		printf("½ĞÂò×ÜÁ¿ iTotalBidVolume:%I64d \n", pTickCopy.iTotalBidVolume);
+		printf("Â½ÃÃ‚Ã²ÃÂ¿ nBidVolume:%s \n", strOut.c_str());
+		printf("Â¼Ã“ÃˆÂ¨Ã†Â½Â¾Ã¹Â½ÃÃ‚Ã´Â¼Ã› nAskAvPrice:%d \n", pTickCopy.nAskAvPrice);
+		printf("Â¼Ã“ÃˆÂ¨Ã†Â½Â¾Ã¹Â½ÃÃ‚Ã²Â¼Ã› nBidAvPrice:%d \n", pTickCopy.nBidAvPrice);
+		printf("Â½ÃÃ‚Ã´Ã—ÃœÃÂ¿ iTotalAskVolume:%I64d \n", pTickCopy.iTotalAskVolume);
+		printf("Â½ÃÃ‚Ã²Ã—ÃœÃÂ¿ iTotalBidVolume:%I64d \n", pTickCopy.iTotalBidVolume);
 #if 0
-		//ÆÚ»õ×Ö¶Î
-		printf("½áËã¼Û nSettle:%d \n", pTickCopy.nSettle);
-		printf("³Ö²ÖÁ¿ nPosition:%d \n", pTickCopy.nPosition);
-		printf("ĞéÊµ¶È nCurDelta:%d \n", pTickCopy.nCurDelta);
-		printf("×ò½áËã nPreSettle:%d \n", pTickCopy.nPreSettle);
-		printf("×ò³Ö²Ö nPrePosition:%d \n", pTickCopy.nPrePosition);
+		//Ã†ÃšÂ»ÃµÃ—Ã–Â¶Ã
+		printf("Â½Ã¡Ã‹Ã£Â¼Ã› nSettle:%d \n", pTickCopy.nSettle);
+		printf("Â³Ã–Â²Ã–ÃÂ¿ nPosition:%d \n", pTickCopy.nPosition);
+		printf("ÃÃ©ÃŠÂµÂ¶Ãˆ nCurDelta:%d \n", pTickCopy.nCurDelta);
+		printf("Ã—Ã²Â½Ã¡Ã‹Ã£ nPreSettle:%d \n", pTickCopy.nPreSettle);
+		printf("Ã—Ã²Â³Ã–Â²Ã– nPrePosition:%d \n", pTickCopy.nPrePosition);
 
-		//Ö¸Êı
-		printf("²»¼ÓÈ¨Ö¸Êı nIndex:%d \n", pTickCopy.nIndex);
-		printf("Æ·ÖÖ×ÜÊı nStocks:%d \n", pTickCopy.nStocks);
-		printf("ÉÏÕÇÆ·ÖÖÊı nUps:%d \n", pTickCopy.nUps);
-		printf("ÏÂµøÆ·ÖÖÊı nDowns:%d \n", pTickCopy.nDowns);
-		printf("³ÖÆ½Æ·ÖÖÊı nHoldLines:%d \n", pTickCopy.nHoldLines);
+		//Ã–Â¸ÃŠÃ½
+		printf("Â²Â»Â¼Ã“ÃˆÂ¨Ã–Â¸ÃŠÃ½ nIndex:%d \n", pTickCopy.nIndex);
+		printf("Ã†Â·Ã–Ã–Ã—ÃœÃŠÃ½ nStocks:%d \n", pTickCopy.nStocks);
+		printf("Ã‰ÃÃ•Ã‡Ã†Â·Ã–Ã–ÃŠÃ½ nUps:%d \n", pTickCopy.nUps);
+		printf("ÃÃ‚ÂµÃ¸Ã†Â·Ã–Ã–ÃŠÃ½ nDowns:%d \n", pTickCopy.nDowns);
+		printf("Â³Ã–Ã†Â½Ã†Â·Ã–Ã–ÃŠÃ½ nHoldLines:%d \n", pTickCopy.nHoldLines);
 #endif
 		printf("-------------------------------\n");
 		i += 1000;
 	}
-	//ÊÍ·Å
+	//ÃŠÃÂ·Ã…
 	TDB_Free(pTick);
 }
 
@@ -265,11 +265,11 @@ string array2str(const int* arr, int len)
 	return str;
 }
 
-//Öğ±Ê³É½»
+//Ã–Ã°Â±ÃŠÂ³Ã‰Â½Â»
 vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate)
 {
-	TDBDefine_ReqTransaction req = {0}; //ÇëÇó
-	strncpy(req.chCode, szCode, sizeof(req.chCode)); //´úÂëĞ´³ÉÄãÏë»ñÈ¡µÄ¹ÉÆ±´úÂë
+	TDBDefine_ReqTransaction req = {0}; //Ã‡Ã«Ã‡Ã³
+	strncpy(req.chCode, szCode, sizeof(req.chCode)); //Â´ÃºÃ‚Ã«ÃÂ´Â³Ã‰Ã„Ã£ÃÃ«Â»Ã±ÃˆÂ¡ÂµÃ„Â¹Ã‰Ã†Â±Â´ÃºÃ‚Ã«
 	strncpy(req.chMarketKey, szMarketKey, sizeof(req.chMarketKey));
 	req.nDate = nDate;
 	req.nBeginTime = 0;
@@ -281,11 +281,11 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 
 	/*if (pTransaction && pCount && pTransaction[pCount-1].nTradeVolume > 0)
 	{
-		printf("´íÎócode:%s\n", req.chCode);
+		printf("Â´Ã­ÃÃ³code:%s\n", req.chCode);
 		strncpy(ErrCode[ErrNum++], req.chCode, sizeof(req.chCode));
 	}*/
 
-	//printf("inside: %s, nDate = %d, ÊÕµ½ %d ÌõÖğ±Ê³É½»ÏûÏ¢\n", __func__, nDate, pCount);
+	//printf("inside: %s, nDate = %d, ÃŠÃ•ÂµÂ½ %d ÃŒÃµÃ–Ã°Â±ÃŠÂ³Ã‰Â½Â»ÃÃ»ÃÂ¢\n", __func__, nDate, pCount);
 
 	vector<TDBDefine_Transaction> vec;
 	for (int i=0; i < pCount; i++)
@@ -294,12 +294,12 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 		//showTranscation(trans);
 		vec.push_back(trans);
 	}
-	//ÊÍ·Å
+	//ÃŠÃÂ·Ã…
 	TDB_Free(pTransaction);
 	return vec;
 }
 
-//»ñÈ¡×ÔÉÏÊĞÈÕÆğËùÓĞµÄÖğ±Ê³É½»
+//Â»Ã±ÃˆÂ¡Ã—Ã”Ã‰ÃÃŠÃÃˆÃ•Ã†Ã°Ã‹Ã¹Ã“ÃÂµÃ„Ã–Ã°Â±ÃŠÂ³Ã‰Â½Â»
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate)
 {
 	map<int, vector<TDBDefine_Transaction>> resMap;
@@ -320,4 +320,83 @@ map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* s
 			break;
 	}
 	return resMap;
+}
+
+OrderType checkOrderType(int value)
+{
+	if(value > BIGGER)
+		return Bigger;
+	else if (value >= BIG)
+		return Big;
+	else if (value >= MEDIUM)
+		return Medium;
+	else
+		return Low;
+}
+
+void calBuyAndSellValue(Order& order)
+{
+	vector<TDBDefine_Transaction>& vec = order.data; 
+	order.buyValue = 0;
+	order.sellValue = 0;
+	for(vector<TDBDefine_Transaction>::iterator iter = vec.begin(); iter != vec.end(); iter++)
+	{
+		if(iter->chBSFlag == 'B')
+		{
+			order.buyValue = order.buyValue + (iter->nTradePrice / 10000) * iter->nTradeVolume; 
+		}
+		else if(iter->chBSFlag == 'S')
+		{
+			order.sellValue = order.sellValue + (iter->nTradePrice / 10000) * iter->nTradeVolume; 
+		}
+	}
+}
+
+// ä»»åŠ¡1ï¼š
+void task1()
+{
+	for(vector<Stock>::iterator iter = allStocks.begin(); iter != allStocks.end(); ++iter)
+	{
+		map<int, vector<TDBDefine_Transaction>>& transMap = iter->tdbTransactionMap;
+		map<int, vector<TDBDefine_Transaction>>::iterator mapBegin = transMap.begin();
+		map<int, vector<TDBDefine_Transaction>>::iterator mapEnd   = transMap.end();
+
+		Order& bigger = (iter->order)[0];
+		Order& big    = (iter->order)[1];
+		Order& medium = (iter->order)[2];
+		Order& low    = (iter->order)[3];
+
+		for (; mapBegin != mapEnd; ++mapBegin)
+		{
+			if(Bigger == checkOrderType(iter2->nTradeVolume))
+			{
+				bigger.orderType = Bigger;
+				bigger.data.push_back(*iter2);
+			}
+			else if(Big == checkOrderType(iter2->nTradeVolume))
+			{
+				big.orderType = Big;
+				big.data.push_back(*iter2);
+			}
+			else if(Medium == checkOrderType(iter2->nTradeVolume))
+			{
+				medium.orderType = Medium;
+				medium.data.push_back(*iter2);
+			}
+			else
+			{
+				low.orderType = Low;
+				low.data.push_back(*iter2);
+			}
+		}
+		//è®¡ç®—ä¹°å…¥å’Œå–å‡ºå€¤
+		cout<<(iter->tdbCode).chWindCode<<";"<<transMap->first;
+		for (int i = 0; i < 4; ++i)
+		{
+			Order& order = (iter->order)[i];
+			calBuyAndSellValue(Order& order);
+			cout<<";"<<order.buyValue<<";"<<order.sellValue;
+		} //end for i = 0
+		cout<<endl;
+	}
 }

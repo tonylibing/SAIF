@@ -10,34 +10,7 @@
 #include <iostream>
 using namespace std;
 static fstream fcout("result.txt", fstream::out);
-OrderType checkOrderType(int value)
-{
-	if(value > BIGGER)
-		return Bigger;
-	else if (value >= BIG)
-		return Big;
-	else if (value >= MEDIUM)
-		return Medium;
-	else
-		return Low;
-}
-void calBuyAndSellValue(Order& order)
-{
-	vector<TDBDefine_Transaction>& vec = order.data; 
-	order.buyValue = 0;
-	order.sellValue = 0;
-	for(vector<TDBDefine_Transaction>::iterator iter = vec.begin(); iter != vec.end(); iter++)
-	{
-		if(iter->chBSFlag == 'B')
-		{
-			order.buyValue = order.buyValue + (iter->nTradePrice / 10000) * iter->nTradeVolume; 
-		}
-		else if(iter->chBSFlag == 'S')
-		{
-			order.sellValue = order.sellValue + (iter->nTradePrice / 10000) * iter->nTradeVolume; 
-		}
-	}
-}
+
 void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap, const string& windName)
 {
 	map<int, vector<TDBDefine_Transaction>>::iterator iter = allTransMap.begin();
@@ -92,13 +65,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	//GetAllStockTikers(allStockTikers, "ticker list.csv");
 	if (hTdb)
 	{
-		vector<TDBDefine_Code> allStocks = GetCodeTable(hTdb, "SH-2-0");
-		vector<TDBDefine_Code> szStocks  = GetCodeTable(hTdb, "SZ-2-0");
-		allStocks.insert(allStocks.end(), szStocks.begin(), szStocks.end());
+		GetCodeTable(hTdb, "SH-2-0");
+		GetCodeTable(hTdb, "SZ-2-0");
+
 		for (auto iter = allStocks.begin(); iter != allStocks.end(); iter++)
 		{
+			string chWindCode = (iter->tdbCode).chWindCode;
 			map<int, vector<TDBDefine_Transaction>> allTransMap;
-			if (string(iter->chWindCode).find(".SH") != string::npos)
+			if (chWindCode.find(".SH") != string::npos)
 			{
 				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SH-2-0", 20160523);
 			}
@@ -106,8 +80,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SZ-2-0", 20160523);
 			}
-			 anslyseAllTransactions(allTransMap, iter->chWindCode);
+			iter->tdbTransactionMap = allTransMap;
+			//anslyseAllTransactions(allTransMap, iter->chWindCode);
 		}
+		task1();
 		/*GetKData(hTdb, "600000.SH", "SH-2-0", 20160520, 20160520, CYC_DAY, 0, 0, 0);
 		map<int, vector<TDBDefine_Transaction>> allTransMap = GetAllTransactions(hTdb, "600000.SH", "SH-2-0", 20160520);
 		anslyseAllTransactions(allTransMap);*/

@@ -20,10 +20,9 @@ enum OrderType {Bigger, Big, Medium, Low};
 typedef struct Order
 {
 	OrderType orderType;
-	vector<TDBDefine_Transaction> data;
 	long long buyValue;
 	long long sellValue;
-
+	vector<TDBDefine_Transaction>  tdbTransaction;
 } Order;
 
 typedef struct StockTicker 
@@ -36,11 +35,12 @@ typedef struct StockTicker
 typedef struct Stock
 {
 	TDBDefine_Code tdbCode;
-	vector<TDBDefine_Transaction>  tdbTransaction;
+	map<int, vector<TDBDefine_Transaction>> tdbTransactionMap;
 	Order  order[4];
 } Stock;
 
 static vector<StockTicker> allStockTikers;
+static vector<Stock> allStocks;
 static int ErrNum = 0;
 static char ErrCode[100][10] = {0};
 
@@ -50,11 +50,14 @@ string int2str(int n);
 string array2str(const int* arr, int len);
 bool isValidDay(int date);
 
+OrderType checkOrderType(int value);
+void calBuyAndSellValue(Order& order);
+
 //获取所有证券的代码
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
 
 //请求代码表
-vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket);
+void GetCodeTable(THANDLE hTdb, char* szMarket);
 
 //登录
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord);
@@ -69,5 +72,5 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 //获取自上市日起所有的逐笔成交
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate);
 
-
+void task1();
 #endif
