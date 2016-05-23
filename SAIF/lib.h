@@ -28,11 +28,17 @@ typedef struct Order
 
 typedef struct StockTicker 
 {
-	string stockCode; //Ö¤È¯´úÂë
-	string stockName; //Ö¤È¯¼ò³Æ
-	int    boardDay;  //ÉÏÊĞÈÕÆÚ
+	string stockCode; //è¯åˆ¸ä»£ç 
+	string stockName; //è¯åˆ¸ç®€ç§°
+	int    boardDay;  //ä¸Šå¸‚æ—¥æœŸ
 }StockTicker;
 
+typedef struct Stock
+{
+	TDBDefine_Code tdbCode;
+	vector<TDBDefine_Transaction>  tdbTransaction;
+	Order  order[4];
+} Stock;
 
 static vector<StockTicker> allStockTikers;
 static int ErrNum = 0;
@@ -44,23 +50,23 @@ string int2str(int n);
 string array2str(const int* arr, int len);
 bool isValidDay(int date);
 
-//»ñÈ¡ËùÓĞÖ¤È¯µÄ´úÂë
+//è·å–æ‰€æœ‰è¯åˆ¸çš„ä»£ç 
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
 
-//ÇëÇó´úÂë±í
+//è¯·æ±‚ä»£ç è¡¨
 vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket);
 
-//µÇÂ¼
+//ç™»å½•
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord);
 
 void showTranscation(const TDBDefine_Transaction& trans);
-void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate);//´øÂòÂôÅÌµÄtick
+void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate);//å¸¦ä¹°å–ç›˜çš„tick
 void GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycle, int nUserDef, int nCQFlag, int nAutoComplete);
 
-//»ñÈ¡Ö¸¶¨ÌìµÄËùÓĞÃ¿±Ê³É½»Êı¾İ
+//è·å–æŒ‡å®šå¤©çš„æ‰€æœ‰æ¯ç¬”æˆäº¤æ•°æ®
 vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate);
 
-//»ñÈ¡×ÔÉÏÊĞÈÕÆğËùÓĞµÄÖğ±Ê³É½»
+//è·å–è‡ªä¸Šå¸‚æ—¥èµ·æ‰€æœ‰çš„é€ç¬”æˆäº¤
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate);
 
 
