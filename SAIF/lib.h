@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <ctime>
 #include <map>
 using namespace std;
 
@@ -49,12 +50,14 @@ static char ErrCode[100][10] = {0};
 string int2str(int n);
 string array2str(const int* arr, int len);
 bool isValidDay(int date);
+int getCurrentDay();
 
 //获取所有证券的代码
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
 
 //请求代码表
 vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket);
+void StoreCodeTable(const vector<TDBDefine_Code> stockCodes, const string& fileName);
 
 //登录
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord);

@@ -16,6 +16,12 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return elems;
 }
 
+int getCurrentDay()
+{
+	time_t t = time(0); // get time now
+	struct tm* now = localtime( &t );
+	return (now->tm_year + 1900)*100*100 + (now->tm_mon+1) * 100 + now->tm_mday;
+}
 //获取所有证券的代码
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 {
@@ -76,6 +82,15 @@ vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
 	}
 	cout<<res.size()<<endl;
 	return res;
+}
+void StoreCodeTable(const vector<TDBDefine_Code> stockCodes, const string& fileName)
+{
+	fstream fcout(fileName, fstream::out);
+	for (auto iter = stockCodes.begin(); iter!=stockCodes.end(); ++iter)
+	{
+		fcout<<iter->chWindCode<<";"<<iter->chCode<<";"<<iter->chMarket<<";"<<iter->chCNName<<";"<<iter->chENName<<";"<<iter->nType<<endl;
+	}
+	fcout.close();
 }
 //登录
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord)
@@ -316,8 +331,12 @@ map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* s
 			flag++;
 		}
 		printf("inside: %s, date: %d, all transactions: %d\n", __func__, date, vec.size());
-		if(flag >= 30)
+		if(flag >= 10)
 			break;
 	}
+	char filename[50];
+	sprintf(filename, ".//transaction//%d.txt", nDate);
+	fstream fcout(filename, fstream::out);
+	fcout.close();
 	return resMap;
 }

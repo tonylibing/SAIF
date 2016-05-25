@@ -7,6 +7,7 @@
 #include <vector>
 #include "lib.h"
 #include <map>
+#include <Windows.h>
 #include <iostream>
 using namespace std;
 static fstream fcout("result.txt", fstream::out);
@@ -81,6 +82,7 @@ void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap
 		fcout<<key<<";"<<bigger.buyValue<<";"<<bigger.sellValue<<";"<<big.buyValue<<";"<<big.sellValue<<";"<<medium.buyValue<<";"<<medium.sellValue<<";"<<low.buyValue<<";"<<low.sellValue<<endl;
 	}
 }
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	string ipAddress = "114.80.154.34";
@@ -92,22 +94,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	//GetAllStockTikers(allStockTikers, "ticker list.csv");
 	if (hTdb)
 	{
-		vector<TDBDefine_Code> allStocks = GetCodeTable(hTdb, "SH-2-0");
-		vector<TDBDefine_Code> szStocks  = GetCodeTable(hTdb, "SZ-2-0");
+		vector<TDBDefine_Code> shStocks = GetCodeTable(hTdb, "SH-2-0");
+		vector<TDBDefine_Code> szStocks = GetCodeTable(hTdb, "SZ-2-0");
+
+		vector<TDBDefine_Code> allStocks;
+		allStocks.insert(allStocks.end(), shStocks.begin(), shStocks.end());
 		allStocks.insert(allStocks.end(), szStocks.begin(), szStocks.end());
+		vector<TDBDefine_Code>().swap(shStocks);
+		vector<TDBDefine_Code>().swap(szStocks);
+		StoreCodeTable(allStocks, "stockCodeTable.txt");
+		map<int, vector<TDBDefine_Transaction>> allTransMap;
 		for (auto iter = allStocks.begin(); iter != allStocks.end(); iter++)
 		{
-			map<int, vector<TDBDefine_Transaction>> allTransMap;
-			if (string(iter->chWindCode).find(".SH") != string::npos)
-			{
-				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SH-2-0", 20160523);
-			}
-			else
-			{
-				allTransMap = GetAllTransactions(hTdb, iter->chWindCode, "SZ-2-0", 20160523);
-			}
-			 anslyseAllTransactions(allTransMap, iter->chWindCode);
+			allTransMap = GetAllTransactions(hTdb, iter->chWindCode,  iter->chMarket, getCurrentDay());
+			anslyseAllTransactions(allTransMap, iter->chWindCode);
+			allTransMap.clear();
 		}
+
 		/*GetKData(hTdb, "600000.SH", "SH-2-0", 20160520, 20160520, CYC_DAY, 0, 0, 0);
 		map<int, vector<TDBDefine_Transaction>> allTransMap = GetAllTransactions(hTdb, "600000.SH", "SH-2-0", 20160520);
 		anslyseAllTransactions(allTransMap);*/
