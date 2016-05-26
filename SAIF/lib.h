@@ -16,8 +16,11 @@ using namespace std;
 #define BIGGER  1000000
 #define BIG     200000
 #define MEDIUM  40000
-
-enum OrderType {Bigger, Big, Medium, Low};
+const int OrderBase = 10000;
+enum OrderType 
+{OrderLow1,   Order1to2,   Order2to3, Order3to4, Order4to5, Order5to6, Order6to7, Order7to8, Order8to9, Order9to10,
+ Order10to20, Order20to30, Order30to40, Order40to50, Order50to60, Order60to70, Order70to80, Order80to90, Order90to100, OrderBig100
+};
 typedef struct Order
 {
 	OrderType orderType;

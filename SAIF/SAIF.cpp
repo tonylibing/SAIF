@@ -13,14 +13,46 @@ using namespace std;
 static fstream fcout("result.txt", fstream::out);
 OrderType checkOrderType(int value)
 {
-	if(value > BIGGER)
-		return Bigger;
-	else if (value >= BIG)
-		return Big;
-	else if (value >= MEDIUM)
-		return Medium;
+	if (value < 1*OrderBase)
+		return OrderLow1;
+	else if (value>=OrderBase && value<2*OrderBase)
+		return Order1to2;
+	else if (value>=2*OrderBase && value<3*OrderBase)
+		return Order2to3;
+	else if (value>=3*OrderBase && value<4*OrderBase)
+		return Order3to4;
+	else if (value>=4*OrderBase && value<5*OrderBase)
+		return Order4to5;
+	else if (value>=5*OrderBase && value<6*OrderBase)
+		return Order5to6;
+	else if (value>=6*OrderBase && value<7*OrderBase)
+		return Order6to7;
+	else if (value>=7*OrderBase && value<8*OrderBase)
+		return Order7to8;
+	else if (value>=8*OrderBase && value<9*OrderBase)
+		return Order8to9;
+	else if (value>=9*OrderBase && value<10*OrderBase)
+		return Order9to10;
+	else if (value>=10*OrderBase && value<20*OrderBase)
+		return Order10to20;
+	else if (value>=20*OrderBase && value<30*OrderBase)
+		return Order20to30;
+	else if (value>=30*OrderBase && value<40*OrderBase)
+		return Order30to40;
+	else if (value>=40*OrderBase && value<50*OrderBase)
+		return Order40to50;
+	else if (value>=50*OrderBase && value<60*OrderBase)
+		return Order50to60;
+	else if (value>=60*OrderBase && value<70*OrderBase)
+		return Order60to70;
+	else if (value>=70*OrderBase && value<80*OrderBase)
+		return Order70to80;
+	else if (value>=80*OrderBase && value<90*OrderBase)
+		return Order80to90;
+	else if (value>=90*OrderBase && value<100*OrderBase)
+		return Order90to100;
 	else
-		return Low;
+		return OrderBig100;
 }
 void calBuyAndSellValue(Order& order)
 {
@@ -46,40 +78,23 @@ void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap
 	for(;iter != allTransMap.end(); iter++)
 	{
 		Order bigger, big, medium, low;
+		vector<Order> orders(20);
 		int key = iter->first;
 		vector<TDBDefine_Transaction> value = iter->second;
 
 		for(vector<TDBDefine_Transaction>::iterator iter2 = value.begin(); iter2 != value.end(); iter2++)
 		{
-			if(Bigger == checkOrderType(iter2->nTradeVolume))
-			{
-				bigger.orderType = Bigger;
-				bigger.data.push_back(*iter2);
-			}
-			else if(Big == checkOrderType(iter2->nTradeVolume))
-			{
-				big.orderType = Big;
-				big.data.push_back(*iter2);
-			}
-			else if(Medium == checkOrderType(iter2->nTradeVolume))
-			{
-				medium.orderType = Medium;
-				medium.data.push_back(*iter2);
-			}
-			else
-			{
-				low.orderType = Low;
-				low.data.push_back(*iter2);
-			}
+			OrderType orderType = checkOrderType(iter2->nTradeVolume);
+			orders.at(orderType).orderType = orderType;
+			(orders.at(orderType).data).push_back(*iter2);
 		}
-
-		calBuyAndSellValue(bigger);
-		calBuyAndSellValue(big);
-		calBuyAndSellValue(medium);
-		calBuyAndSellValue(low);
-		
-		fcout<<windName<<";";
-		fcout<<key<<";"<<bigger.buyValue<<";"<<bigger.sellValue<<";"<<big.buyValue<<";"<<big.sellValue<<";"<<medium.buyValue<<";"<<medium.sellValue<<";"<<low.buyValue<<";"<<low.sellValue<<endl;
+		fcout<<windName<<";"<<key;
+		for(int i = 0; i < 20; i++)
+		{
+			calBuyAndSellValue(orders.at(i));
+			fcout<<";"<<orders.at(i).buyValue<<";"<<orders.at(i).sellValue;
+		}
+		fcout<<endl;
 	}
 }
 
@@ -91,6 +106,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	string passWord  = "19860968";
 
 	THANDLE hTdb = logIn(ipAddress, port, userName, passWord);
+	fcout<<"股票名字;日期;<1万;1万~2万;2万~3万;3万~4万;4万~5万;5万~6万;6万~7万;7万~8万;8万~9万;9万~10万;10万~20万;20万~30万;30万~40万;40万~50万;50万~60万;60万~70万;70万~80万;80万~90万;90万~100万;>100万"<<endl;
 	//GetAllStockTikers(allStockTikers, "ticker list.csv");
 	if (hTdb)
 	{
@@ -111,7 +127,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			anslyseAllTransactions(allTransMap, iter->chWindCode);
 			allTransMap.clear();
 		}
-
 		/*GetKData(hTdb, "600000.SH", "SH-2-0", 20160520, 20160520, CYC_DAY, 0, 0, 0);
 		map<int, vector<TDBDefine_Transaction>> allTransMap = GetAllTransactions(hTdb, "600000.SH", "SH-2-0", 20160520);
 		anslyseAllTransactions(allTransMap);*/
