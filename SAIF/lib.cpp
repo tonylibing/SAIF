@@ -317,6 +317,10 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 //获取自上市日起所有的逐笔成交
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate)
 {
+	//char filename[50];
+	//sprintf(filename, ".//transaction//%s.txt", szCode);
+	//fstream fcout(filename, fstream::out);
+
 	map<int, vector<TDBDefine_Transaction>> resMap;
 	int flag = 0;
 	for(int date = nDate; date > 19900101; date--)
@@ -324,19 +328,17 @@ map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* s
 		if(!isValidDay(date))
 			continue;
 		vector<TDBDefine_Transaction> vec = GetTransaction(hTdb, szCode, szMarketKey, date);
-		if(vec.size() > 0) {
+		if(vec.size() > 0) 
+		{
 			resMap[date] = vec;
 			flag = 0;
 		} else {
 			flag++;
 		}
-		printf("inside: %s, date: %d, all transactions: %d\n", __func__, date, vec.size());
+		//printf("inside: %s, date: %d, all transactions: %d\n", __func__, date, vec.size());
 		if(flag >= 10)
 			break;
 	}
-	char filename[50];
-	sprintf(filename, ".//transaction//%d.txt", nDate);
-	fstream fcout(filename, fstream::out);
-	fcout.close();
+	//fcout.close();
 	return resMap;
 }

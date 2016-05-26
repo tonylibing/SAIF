@@ -103,6 +103,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		vector<TDBDefine_Code>().swap(shStocks);
 		vector<TDBDefine_Code>().swap(szStocks);
 		StoreCodeTable(allStocks, "stockCodeTable.txt");
+
 		map<int, vector<TDBDefine_Transaction>> allTransMap;
 		for (auto iter = allStocks.begin(); iter != allStocks.end(); iter++)
 		{
