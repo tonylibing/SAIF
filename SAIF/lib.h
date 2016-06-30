@@ -51,6 +51,7 @@ typedef struct InputParameter {
 	int startMonth;
 	int endYear;
 	int endMonth;
+	string stockCode;
 } InputParameter;
 static int ErrNum = 0;
 static char ErrCode[100][10] = {0};

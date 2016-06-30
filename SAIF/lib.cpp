@@ -18,15 +18,17 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 void usage() {
 	cout<<string(50, '-')<<endl;
-	cout<<"请选择运行模式:(输入1或者2)"<<endl;
+	cout<<"请选择运行模式:(输入1或者2或者3)"<<endl;
 	cout<<"1). 获取一段时间间隔的数据, 例如(2015年6月到2016年1月)"<<endl;
 	cout<<"2). 获取特定一个月的数据, 例如2015年5月"<<endl;
+	cout<<"2). 获取特定一个月的数据, 例如2015年5月"<<endl;
+	cout<<"3). 从上次某一月份的某次股票开始"<<endl;
 }
 InputParameter readInput() {
 	usage();
 	int type;
 	cin>>type;
-	if(type != 1 && type != 2)
+	if(type != 1 && type != 2 && type != 3)
 		readInput();
 
 	InputParameter input;
@@ -50,6 +52,16 @@ InputParameter readInput() {
 		printf("请输入月份?(HINT: 1到12)\n");
 		cin>>month;
 		input.type = 2;
+		input.startYear = year;
+		input.startMonth = month;
+	} else if (type == 3) {
+		input.type = 3;
+		printf("请输入股票代码, 例如(603028.SH): ");
+		cin>>input.stockCode;
+		printf("请输入年份?(HINT:2016, 2015, 2014, 2013)\n");
+		cin>>year;
+		printf("请输入月份?(HINT: 1到12)\n");
+		cin>>month;
 		input.startYear = year;
 		input.startMonth = month;
 	}

@@ -103,7 +103,7 @@ void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap
 void anslyseAllTransactionsByMonth(THANDLE& hTdb, int year, int month)
 {
 	string resultName = string(".\\result\\") + int2str(year*100 + month) + string(".txt");
-	fcout.open(resultName, fstream::out);
+	fcout.open(resultName, fstream::app|fstream::out);
 	fcout<<"股票名字;日期;<1万买;<1万卖;1万~2万买;1万~2万卖;2万~3万买;2万~3万卖;3万~4万买;3万~4万卖;4万~5万买;4万~5万卖;5万~6万买;5万~6万卖;6万~7万买;6万~7万卖;7万~8万买;7万~8万卖;8万~9万买;8万~9万卖;9万~10万买;9万~10万卖;";
 	fcout<<"10万~20万买;10万~20万卖;20万~30万买;20万~30万卖;30万~40万买;30万~40万卖;40万~50万买;40万~50万卖;50万~60万买;50万~60万卖;60万~70万买;60万~70万卖;70万~80万买;70万~80万卖;80万~90万买;80万~90万卖;90万~100万买;90万~100万卖;>100万买;>100万卖"<<endl;
 	map<int, vector<TDBDefine_Transaction>> allTransMap;
@@ -137,6 +137,30 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				anslyseAllTransactionsByMonth(hTdb, inputParameter.startYear, inputParameter.startMonth);
 			}
+		}
+		else if (inputParameter.type == 3)
+		{
+			string resultName = string(".\\result\\") + inputParameter.stockCode + int2str(inputParameter.startYear*100 + inputParameter.startMonth) + string(".txt");
+			fcout.open(resultName, fstream::out);
+			fcout<<"股票名字;日期;<1万买;<1万卖;1万~2万买;1万~2万卖;2万~3万买;2万~3万卖;3万~4万买;3万~4万卖;4万~5万买;4万~5万卖;5万~6万买;5万~6万卖;6万~7万买;6万~7万卖;7万~8万买;7万~8万卖;8万~9万买;8万~9万卖;9万~10万买;9万~10万卖;";
+			fcout<<"10万~20万买;10万~20万卖;20万~30万买;20万~30万卖;30万~40万买;30万~40万卖;40万~50万买;40万~50万卖;50万~60万买;50万~60万卖;60万~70万买;60万~70万卖;70万~80万买;70万~80万卖;80万~90万买;80万~90万卖;90万~100万买;90万~100万卖;>100万买;>100万卖"<<endl;
+			bool flag = false;
+			for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++)
+			{
+				if(iter->stockCode == inputParameter.stockCode) 
+				{
+					flag = true;
+				}
+				if(flag) 
+				{
+					map<int, vector<TDBDefine_Transaction>> allTransMap;
+
+					allTransMap = GetAllTransactions(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), inputParameter.startYear, inputParameter.startMonth);
+					anslyseAllTransactions(allTransMap, iter->stockCode);
+					allTransMap.clear();
+				}
+			}
+			fcout.close();
 		}
 		else
 		{
