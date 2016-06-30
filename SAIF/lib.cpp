@@ -16,6 +16,45 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return elems;
 }
 
+void usage() {
+	cout<<string(50, '-')<<endl;
+	cout<<"请选择运行模式:(输入1或者2)"<<endl;
+	cout<<"1). 获取一段时间间隔的数据, 例如(2015年6月到2016年1月)"<<endl;
+	cout<<"2). 获取特定一个月的数据, 例如2015年5月"<<endl;
+}
+InputParameter readInput() {
+	usage();
+	int type;
+	cin>>type;
+	if(type != 1 && type != 2)
+		readInput();
+
+	InputParameter input;
+
+	int year, month;
+	if (type == 1) {
+		string startTime;
+		string endTime;
+		cout<<"请输入开始时间(例如: 2015/6): ";
+		cin>>startTime;
+		cout<<"请输入结束时间(例如: 2015/12): ";
+		cin>>endTime;
+		input.type = 1;
+		input.startYear  = atoi(startTime.substr(0, 4).c_str());
+		input.startMonth = atoi(startTime.substr(5, 7).c_str());
+		input.endYear    = atoi(endTime.substr(0, 4).c_str());
+		input.endMonth   = atoi(endTime.substr(5, 7).c_str());
+	} else if (type == 2) {
+		printf("请输入年份?(HINT:2016, 2015, 2014, 2013)\n");
+		cin>>year;
+		printf("请输入月份?(HINT: 1到12)\n");
+		cin>>month;
+		input.type = 2;
+		input.startYear = year;
+		input.startMonth = month;
+	}
+	return input;
+}
 int getCurrentDay()
 {
 	time_t t = time(0); // get time now
@@ -39,12 +78,16 @@ void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 		stockTiker.stockCode = tokens[0];
 		stockTiker.stockName = tokens[1];
 		stockTiker.boardDay  = atoi((tokens[2].substr(0, 4) + tokens[2].substr(5, 7) + tokens[2].substr(9, 11)).c_str());
+		if(stockTiker.stockCode.find("SH") != string::npos)
+			stockTiker.stockType = "SH-2-0";
+		else
+			stockTiker.stockType = "SZ-2-0";
 		vec.push_back(stockTiker);
 	}
 	fcin.close();
 	fstream fcout("ticker_list.txt", fstream::out);
 	for_each(vec.begin(), vec.end(), [&fcout](const StockTicker& stockTicker){
-		fcout<<stockTicker.stockCode.substr(0, 6)<<endl;
+		fcout<<stockTicker.stockCode<<endl;
 	});
 	fcout.close();
 }
@@ -66,7 +109,7 @@ vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
 	}
 	printf("---------------------------Code Table--------------------\n");
 	printf("收到代码表项数：%d\n",pCount);
-	
+
 	for (int i=0;i<pCount;i++)
 	{
 		if(pCodetable[i].nType != 0x10)
@@ -102,9 +145,9 @@ THANDLE logIn(const string& ipAddress, int port, const string& userName, const s
 	strcpy(settings.szUser, userName.c_str());
 	strcpy(settings.szPassword,  passWord.c_str());
 
-	settings.nRetryCount = 30;
-	settings.nRetryGap = 30;
-	settings.nTimeOutVal = 30;
+	settings.nRetryCount = 100;
+	settings.nRetryGap = 1;
+	settings.nTimeOutVal = 300;
 
 	TDBDefine_ResLogin LoginRes = {0};
 	THANDLE hTdb = TDB_Open(&settings, &LoginRes);
@@ -296,8 +339,8 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 
 	/*if (pTransaction && pCount && pTransaction[pCount-1].nTradeVolume > 0)
 	{
-		printf("错误code:%s\n", req.chCode);
-		strncpy(ErrCode[ErrNum++], req.chCode, sizeof(req.chCode));
+	printf("错误code:%s\n", req.chCode);
+	strncpy(ErrCode[ErrNum++], req.chCode, sizeof(req.chCode));
 	}*/
 
 	//printf("inside: %s, nDate = %d, 收到 %d 条逐笔成交消息\n", __func__, nDate, pCount);
@@ -315,30 +358,34 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 }
 
 //获取自上市日起所有的逐笔成交
-map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate)
+map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int year, int month)
 {
-	//char filename[50];
-	//sprintf(filename, ".//transaction//%s.txt", szCode);
-	//fstream fcout(filename, fstream::out);
-
 	map<int, vector<TDBDefine_Transaction>> resMap;
-	int flag = 0;
-	for(int date = nDate; date > 19900101; date--)
+
+	for(int i = 1; i <= 31; i++)
 	{
-		if(!isValidDay(date))
-			continue;
-		vector<TDBDefine_Transaction> vec = GetTransaction(hTdb, szCode, szMarketKey, date);
-		if(vec.size() > 0) 
-		{
-			resMap[date] = vec;
-			flag = 0;
-		} else {
-			flag++;
-		}
-		//printf("inside: %s, date: %d, all transactions: %d\n", __func__, date, vec.size());
-		if(flag >= 10)
+		int date = year * 10000 + month * 100 + i;		
+		if(date > getCurrentDay())
 			break;
+		//printf("GetAllTransactions for %s, date: %d\n", szCode, date);
+		vector<TDBDefine_Transaction> vec = GetTransaction(hTdb, szCode, szMarketKey, date);
+		resMap[date] = vec;
 	}
-	//fcout.close();
 	return resMap;
+}
+
+vector<pair<int, int>> timeRange(int startY, int startM, int endY, int endM)
+{
+	vector<pair<int, int>> res;
+	while((startY < endY) || (startY == endY && startM <= endM))
+	{
+		res.push_back(make_pair(startY, startM));
+		startM += 1;
+		if(startM >= 13) 
+		{
+			startY += 1;
+			startM = 1;
+		}
+	}
+	return res;
 }
