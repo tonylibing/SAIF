@@ -18,17 +18,18 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 void usage() {
 	cout<<string(50, '-')<<endl;
-	cout<<"请选择运行模式:(输入1或者2或者3)"<<endl;
-	cout<<"1). 获取一段时间间隔的数据, 例如(2015年6月到2016年1月)"<<endl;
-	cout<<"2). 获取特定一个月的数据, 例如2015年5月"<<endl;
-	cout<<"2). 获取特定一个月的数据, 例如2015年5月"<<endl;
-	cout<<"3). 从上次某一月份的某次股票开始"<<endl;
+	cout<<"请选择运行模式:(输入1或者2或者3或者4或者5)"<<endl;
+	cout<<"1). 获取一段时间间隔的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
+	cout<<"2). 获取特定一个月的逐笔成交数据, 例如(2015年5月)"<<endl;
+	cout<<"3). 获取特定一个月份的\"特定\"股票开始的逐笔成交数据,例如(2015年5月, 从603026.SH开始获取)"<<endl;
+	cout<<"4). 获取特定一天的逐笔成交数据, 例如(2016年4月12日)"<<endl;
+	cout<<"5). 获取特定一段时间间隔所有股票的K线数据, 例如(从2015/06/01到2016/01/31)"<<endl;
 }
 InputParameter readInput() {
 	usage();
 	int type;
 	cin>>type;
-	if(type != 1 && type != 2 && type != 3)
+	if(type != 1 && type != 2 && type != 3 && type != 4 && type != 5)
 		readInput();
 
 	InputParameter input;
@@ -64,6 +65,26 @@ InputParameter readInput() {
 		cin>>month;
 		input.startYear = year;
 		input.startMonth = month;
+	} else if (type == 4) {
+		input.type = 4;
+		printf("请输入指定的日期, 例如(2015/6/18): ");
+		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
+		//string str;
+		//cin>>str;
+		//input.startYear  = atoi(str.substr(0, 4).c_str());
+		//input.startMonth = atoi(str.substr(5, 7).c_str());
+		//input.startDay = atoi(str.substr(8, 10).c_str());
+	}
+	else if (type == 5) {
+		input.type = 5;
+		string startTime;
+		string endTime;
+		cout<<"请输入开始时间(例如: 2015/06/01): ";
+		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
+		cout<<"请输入结束时间(例如: 2015/12/31): ";
+		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
+		cout<<"请输数据间隔周期(HINT:取值范围0到60): ";
+		cin>>input.cycleNumber;
 	}
 	return input;
 }
@@ -173,14 +194,6 @@ THANDLE logIn(const string& ipAddress, int port, const string& userName, const s
 	return NULL;
 }
 
-bool isValidDay(int date)
-{
-	int day   = date%100;
-	int month = (date/100)%100;
-
-	return (day>=1 && day <= 31) && (month >= 1 && month <= 12);
-}
-
 void showTranscation(const TDBDefine_Transaction& trans)
 {
 	printf("---------------------------------------Transaction Data------------------------------------------\n");
@@ -195,44 +208,6 @@ void showTranscation(const TDBDefine_Transaction& trans)
 	printf("叫买序号: %d \n", trans.nBidOrder);
 	printf("成交编号: %d \n", trans.nIndex);
 	printf("------------------------------------------------------\n");
-}
-//获取K线
-void GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycle, int nUserDef, int nCQFlag, int nAutoComplete)
-{
-	//请求K线
-	TDBDefine_ReqKLine* req = new TDBDefine_ReqKLine;
-	strncpy(req->chCode, szCode, ELEMENT_COUNT(req->chCode));
-	strncpy(req->chMarketKey, szMarket, ELEMENT_COUNT(req->chMarketKey));
-
-	req->nCQFlag = (REFILLFLAG)nCQFlag;//除权标志，由用户定义
-	req->nBeginDate = nBeginDate;//开始日期
-	req->nEndDate = nEndDate;//结束日期
-	req->nBeginTime = 0;//开始时间
-	req->nEndTime = 0;//结束时间
-
-	req->nCycType = (CYCTYPE)nCycle;
-	req->nCycDef = 0;
-
-	//返回结构体指针
-	TDBDefine_KLine* kLine = NULL;
-	//返回数
-	int pCount;
-	//API请求K线
-	TDB_GetKLine(hTdb,req,&kLine,&pCount);
-	delete req;
-	req = NULL;
-
-	printf("---------------------------K Data--------------------\n");
-	printf("数据条数：%d,打印 1/100 条\n\n",pCount);
-	for(int i=0;i<pCount;)
-	{
-		printf("WindCode:%s\n Code:%s\n Date:%d\n Time:%d\n Open:%d\n High:%d\n Low:%d\n Close:%d\n Volume:%I64d\n Turover:%I64d\n MatchItem:%d\n Interest:%d\n",
-			kLine[i].chWindCode,kLine[i].chCode,kLine[i].nDate,kLine[i].nTime,kLine[i].nOpen,kLine[i].nHigh,kLine[i].nLow,kLine[i].nClose,
-			kLine[i].iVolume,kLine[i].iTurover,kLine[i].nMatchItems,kLine[i].nInterest);
-		i +=100;
-	}
-	//释放
-	TDB_Free(kLine);
 }
 
 //带买卖盘的tick
@@ -400,4 +375,174 @@ vector<pair<int, int>> timeRange(int startY, int startM, int endY, int endM)
 		}
 	}
 	return res;
+}
+vector<int> timeRange(int startY, int startM, int startD, int endY, int endM, int endD)
+{
+	vector<int> res;
+	while((startY < endY) || (startY == endY && startM < endM) || (startY == endY && startM == endM && startD <= endD))
+	{
+		if(isValid(startY, startM, startD))
+		{
+			int curDay = startY * 100 * 100 + startM * 100 + startD;
+			res.push_back(curDay);
+		}
+		startD += 1;
+		if(startD >= 32)
+		{
+			startD = 1;
+			startM += 1;
+		}
+		if(startM >= 13) 
+		{
+			startM = 1;
+			startY += 1;
+		}
+	}
+	return res;
+}
+vector<pair<int, int>> timeRange2(int startY, int startM, int startD, int endY, int endM, int endD)
+{
+    vector<pair<int, int>> res;
+    pair<int, int> element;
+    if (startY == endY && startM == endM) {
+        element.first = startY * 100 * 100 + startM * 100 + startD;
+        element.second = endY * 100 * 100 + endY * 100 + endD;
+        res.push_back(element);
+    } else if (startY == endY) {
+        element.first = startY * 100 * 100 + startM * 100 + startD;
+        element.second = startY * 100 * 100 + startM * 100 + 31;
+        res.push_back(element);
+        for (int m = startM + 1; m < endM; m++) {
+            element.first = startY * 100 * 100 + m * 100 + 1;
+            element.second = startY * 100 * 100 + m * 100 + 31;
+            res.push_back(element);
+        }
+        element.first = endY * 100 * 100 + endM * 100 + 1;
+        element.second = endY * 100 * 100 + endM * 100 + endD;
+        res.push_back(element);
+    } else {
+        element.first = startY * 100 * 100 + startM * 100 + startD;
+        element.second = startY * 100 * 100 + startM * 100 + 31;
+        res.push_back(element);
+        startM += 1;
+        if (startM > 12) {
+            startM = 1;
+            startY += 1;
+        }
+        while (startY < endY || (startY == endY && startM < endM)) {
+            element.first = startY * 100 * 100 + startM * 100 + 1;
+            element.second = startY * 100 * 100 + startM * 100 + 31;
+            res.push_back(element);
+            startM += 1;
+            if (startM > 12) {
+                startM = 1;
+                startY += 1;
+            }
+        }
+        element.first = endY * 100 * 100 + endM * 100 + 1;
+        element.second = endY * 100 * 100 + endM * 100 + endD;
+        res.push_back(element);
+    }
+	for(auto i = 0; i < res.size(); i++)
+	{
+		string endDay = int2str(res.at(i).second);
+		int year  = atoi(endDay.substr(0, 4).c_str());
+		int month = atoi(endDay.substr(4, 2).c_str());
+		int day = atoi(endDay.substr(6, 2).c_str());
+		if(month ==1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
+			res.at(i).second = year * 100 * 100 + month * 100 + 31;
+		else
+			res.at(i).second = year * 100 * 100 + month * 100 + 30;
+
+		if(year == 2016 && month == 2)
+			res.at(i).second = year * 100 * 100 + month * 100 + 29;
+		else if(year != 2016 && month == 2)
+			res.at(i).second = year * 100 * 100 + month * 100 + 28;
+	}
+    return res;
+}
+
+int isValid(int yy, int mm, int dd) {
+	if (dd <= 0) return 0;
+	switch (mm) {
+	case 1: case 3: case 5: case 7:
+	case 8: case 10: case 12:
+		return dd <= 31;
+	case 4: case 6: case 9: case 11:
+		return dd <= 30;
+	case 2:
+		return dd <= 28 + (yy % 400 == 0 || (yy % 4 == 0 && yy % 100 != 0));
+	default:
+		return 0;  /* invalid month */
+	}
+}
+
+
+vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycleType, int nCycleNumber, int nCQFlag, int nAutoComplete)
+{
+	//请求K线
+	TDBDefine_ReqKLine* req = new TDBDefine_ReqKLine;
+	strncpy(req->chCode, szCode, ELEMENT_COUNT(req->chCode));
+	strncpy(req->chMarketKey, szMarket, ELEMENT_COUNT(req->chMarketKey));
+
+	req->nCQFlag = (REFILLFLAG)nCQFlag;//除权标志，由用户定义
+	req->nBeginDate = nBeginDate;//开始日期
+	req->nEndDate = nEndDate;//结束日期
+	req->nBeginTime = 0;//开始时间
+	req->nEndTime = 0;//结束时间
+
+	req->nCycType = (CYCTYPE)nCycleType;
+	req->nCycDef = nCycleNumber;
+
+	//返回结构体指针
+	TDBDefine_KLine* kLine = NULL;
+	//返回数
+	int pCount;
+	//API请求K线
+	TDB_GetKLine(hTdb, req, &kLine, &pCount);
+	//printf("GetKData: result number: %d, szCode: %s\n", pCount, szCode);
+	delete req;
+	req = NULL;
+
+	vector<TDBDefine_KLine> res;
+	TDBDefine_KLine kLineObj = {0};
+
+	if(pCount > 0) {
+		for(int i=0; i<pCount; i++) {
+			res.push_back(kLine[i]);
+		}
+	} else {
+		//int hour   = 9;
+		//int minute = 30;
+		//while (hour < 15 || (hour == 15 && minute == 0)) 
+		//{
+		//	if(hour < 11 || (hour == 11 && minute <= 30) || (hour == 15 && minute == 0) || (hour < 15 && hour >= 13))
+		//	{
+		//		for(int i = 0; i <= 8; i++)
+		//			kLineObj.chWindCode[i] = szCode[i];
+		//		kLineObj.chWindCode[9] = '\0';
+		//		kLineObj.nDate = nBeginDate;
+		//		kLineObj.nTime = (hour * 100 + minute) * 100000;
+		//		res.push_back(kLineObj);
+		//	}
+
+		//	minute += nCycleNumber;
+		//	if (minute >= 60) 
+		//	{
+		//		hour += 1;
+		//		minute = 0;
+		//	}
+
+		//}
+	}
+
+	//释放
+	TDB_Free(kLine);
+	return res;
+}
+
+void writeFileHeaderForTask1(fstream& fcout)
+{
+	fcout<<"股票名字;日期;<1万买;<1万卖;1万~2万买;1万~2万卖;2万~3万买;2万~3万卖;3万~4万买;3万~4万卖;4万~5万买;4万~5万卖;5万~6万买;5万~6万卖;6万~7万买;6万~7万卖;7万~8万买;7万~8万卖;8万~9万买;8万~9万卖;9万~10万买;9万~10万卖;";
+	fcout<<"10万~20万买;10万~20万卖;20万~30万买;20万~30万卖;30万~40万买;30万~40万卖;40万~50万买;40万~50万卖;50万~60万买;50万~60万卖;60万~70万买;60万~70万卖;70万~80万买;70万~80万卖;80万~90万买;80万~90万卖;90万~100万买;90万~100万卖;>100万买;>100万卖"<<endl;
 }
