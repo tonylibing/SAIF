@@ -95,5 +95,6 @@ vector<pair<int, int>> timeRange2(int startY, int startM, int startD, int endY, 
 //请求K线
 vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycleType, int nCycleNumber, int nCQFlag, int nAutoComplete);
 
+void getLast15And30(const vector<TDBDefine_Transaction>& transVec, vector<TDBDefine_Transaction>& last15, vector<TDBDefine_Transaction>& last30);
 
 #endif

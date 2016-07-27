@@ -226,7 +226,34 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else if (inputParameter.type == 6)
 		{
-			map<int, vector<TDBDefine_Transaction>> allTransMap;
+			vector<pair<int, int>> timeVec = timeRange(inputParameter.startYear, inputParameter.startMonth, inputParameter.endYear, inputParameter.endMonth);
+			for (int i = 0; i < timeVec.size(); ++i) //年月
+			{
+				map<int, vector<TDBDefine_Transaction>> last15transMap;
+				map<int, vector<TDBDefine_Transaction>> last30transMap;
+
+				vector<TDBDefine_Transaction> transVec;
+				for(int j = 1; j <= 31; j++)  //日
+				{
+					int day = i.first * 10000 + i.second * 100 + j;
+					for (auto stockIter = allStockTikers.begin(); stockIter != allStockTikers.end(); stockIter++)
+					{
+						transVec = GetTransaction(hTdb, (char*)(stockIter->stockCode).c_str(), (char*)(stockIter->stockType).c_str(), day);
+					}
+					vector<TDBDefine_Transaction> last15;
+					vector<TDBDefine_Transaction> last30;
+					getLast15And30(transVec, last15, last30);
+					last15transMap[day] = last15;
+					last30transMap[day] = last30;
+				}
+				transVec.clear();
+			}
+
+
+
+
+			
+			
 			for (auto stockIter = allStockTikers.begin(); stockIter != allStockTikers.end(); stockIter++)
 			{	
 				if(stockIter->stockCode != "600602.SH")
