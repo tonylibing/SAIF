@@ -98,12 +98,16 @@ InputParameter readInput() {
 	else if (type == 6)
 	{
 		input.type = 6;
-		//printf("请输入年份?(HINT:2016, 2015, 2014, 2013)\n");
-		//cin>>year;
-		//printf("请输入月份?(HINT: 1到12)\n");
-		//cin>>month;
-		//input.startYear = year;
-		//input.startMonth = month;
+		string startTime;
+		string endTime;
+		cout<<"请输入开始时间(例如: 2015/6): ";
+		cin>>startTime;
+		cout<<"请输入结束时间(例如: 2015/12): ";
+		cin>>endTime;
+		input.startYear  = atoi(startTime.substr(0, 4).c_str());
+		input.startMonth = atoi(startTime.substr(5, 7).c_str());
+		input.endYear    = atoi(endTime.substr(0, 4).c_str());
+		input.endMonth   = atoi(endTime.substr(5, 7).c_str());
 	}
 	return input;
 }
