@@ -238,8 +238,6 @@ int _tmain(int argc, _TCHAR* argv[])
 				vector<TDBDefine_Transaction> last30;
 				for(vector<TDBDefine_Transaction>::iterator iter = transVec.begin(); iter != transVec.end(); iter++)
 				{
-					//if(iter->chBSFlag != 'B')
-					//	continue;
 					const int FLAG = 100000;
 					int hourAndMinute = iter->nTime / 100000;
 					if( iter->nTime >= 1445 * FLAG)
@@ -281,7 +279,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 		}
 	}
-	cout<<string(50, '*')<<endl<<"                  运行完成!          "<<endl<<string(50, '*')<<endl;
+	cout<<string(50, '*')<<endl<<"                  脭脣脨脨脥锚鲁脡!          "<<endl<<string(50, '*')<<endl;
 	TDB_Close(hTdb);
 	return 0;
 }
