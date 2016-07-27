@@ -224,6 +224,62 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			fcout.close();
 		}
+		else if (inputParameter.type == 6)
+		{
+			map<int, vector<TDBDefine_Transaction>> allTransMap;
+			for (auto stockIter = allStockTikers.begin(); stockIter != allStockTikers.end(); stockIter++)
+			{	
+				if(stockIter->stockCode != "600602.SH")
+					continue;
+				vector<TDBDefine_Transaction> transVec = GetTransaction(hTdb, (char*)(stockIter->stockCode).c_str(), (char*)(stockIter->stockType).c_str(), 20160627);
+				vector<TDBDefine_Transaction> first15;
+				vector<TDBDefine_Transaction> first30;
+				vector<TDBDefine_Transaction> last15;
+				vector<TDBDefine_Transaction> last30;
+				for(vector<TDBDefine_Transaction>::iterator iter = transVec.begin(); iter != transVec.end(); iter++)
+				{
+					//if(iter->chBSFlag != 'B')
+					//	continue;
+					const int FLAG = 100000;
+					int hourAndMinute = iter->nTime / 100000;
+					if( iter->nTime >= 1445 * FLAG)
+					{
+						last15.push_back(*iter);
+					}
+					if ( iter->nTime >= 1430 * FLAG)
+					{
+						last30.push_back(*iter);
+
+					}
+					if (iter->nTime >= 925 * FLAG && iter->nTime <= 945 * FLAG)
+					{
+						first15.push_back(*iter);
+					}
+					if (iter->nTime >= 925 * FLAG && iter->nTime <= 1000 * FLAG)
+					{
+						first30.push_back(*iter);
+					}
+				}
+
+				double first30Res = 0;
+				for_each(first30.begin(), first30.end(), [&first30Res](const TDBDefine_Transaction& element) {
+						if(element.chBSFlag == 'B')
+							first30Res += (element.nTradeVolume * ((double)element.nTradePrice / 10000));
+						else if(element.chBSFlag == 'S')
+							first30Res -= (element.nTradeVolume * ((double)element.nTradePrice / 10000));
+					});
+
+				double last30Res = 0;
+				for_each(last30.begin(), last30.end(), [&last30Res](const TDBDefine_Transaction& element) {
+						if(element.chBSFlag == 'B')
+							last30Res += (element.nTradeVolume * ((double)element.nTradePrice / 10000));
+						else if(element.chBSFlag == 'S')
+							last30Res -= (element.nTradeVolume * ((double)element.nTradePrice / 10000));
+					});
+				cout<<(long long)first30Res<<" "<<(long long)last30Res<<endl;
+
+			}
+		}
 	}
 	cout<<string(50, '*')<<endl<<"                  运行完成!          "<<endl<<string(50, '*')<<endl;
 	TDB_Close(hTdb);

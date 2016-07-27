@@ -24,12 +24,13 @@ void usage() {
 	cout<<"3). 获取特定一个月份的\"特定\"股票开始的逐笔成交数据,例如(2015年5月, 从603026.SH开始获取)"<<endl;
 	cout<<"4). 获取特定一天的逐笔成交数据, 例如(2016年4月12日)"<<endl;
 	cout<<"5). 获取特定一段时间间隔所有股票的K线数据, 例如(从2015/06/01到2016/01/31)"<<endl;
+	cout<<"6). 获取主动成交额(first 15 minutes and 30 minutes after open, last 15 minutes and 30 minutes before close)"<<endl;
 }
 InputParameter readInput() {
 	usage();
 	int type;
 	cin>>type;
-	if(type != 1 && type != 2 && type != 3 && type != 4 && type != 5)
+	if(type != 1 && type != 2 && type != 3 && type != 4 && type != 5 && type != 6)
 		readInput();
 
 	InputParameter input;
@@ -85,6 +86,16 @@ InputParameter readInput() {
 		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
 		cout<<"请输数据间隔周期(HINT:取值范围0到60): ";
 		cin>>input.cycleNumber;
+	} 
+	else if (type == 6)
+	{
+		input.type = 6;
+		//printf("请输入年份?(HINT:2016, 2015, 2014, 2013)\n");
+		//cin>>year;
+		//printf("请输入月份?(HINT: 1到12)\n");
+		//cin>>month;
+		//input.startYear = year;
+		//input.startMonth = month;
 	}
 	return input;
 }
