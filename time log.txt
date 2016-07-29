@@ -1,0 +1,4 @@
+2016/7/17   4   change the time format for task1's result.
+2016/7/24   7   do research for the new task, and write a research report
+2016/7/27	6	check the data with wind's data, and implement task3
+2016/7/28	6	implement task3 and start getting data.

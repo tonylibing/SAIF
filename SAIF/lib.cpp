@@ -26,13 +26,13 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 void usage() {
 	cout<<string(50, '-')<<endl;
-	cout<<"è¯·é€‰æ‹©è¿è¡Œæ¨¡å¼:(è¾“å…¥1æˆ–è€…2æˆ–è€…3æˆ–è€…4æˆ–è€…5)"<<endl;
-	cout<<"1). è·å–ä¸€æ®µæ—¶é—´é—´éš”çš„é€ç¬”æˆäº¤æ•°æ®, ä¾‹å¦‚(ä»2015å¹´6æœˆåˆ°2016å¹´1æœˆ)"<<endl;
-	cout<<"2). è·å–ç‰¹å®šä¸€ä¸ªæœˆçš„é€ç¬”æˆäº¤æ•°æ®, ä¾‹å¦‚(2015å¹´5æœˆ)"<<endl;
-	cout<<"3). è·å–ç‰¹å®šä¸€ä¸ªæœˆä»½çš„\"ç‰¹å®š\"è‚¡ç¥¨å¼€å§‹çš„é€ç¬”æˆäº¤æ•°æ®,ä¾‹å¦‚(2015å¹´5æœˆ, ä»603026.SHå¼€å§‹è·å–)"<<endl;
-	cout<<"4). è·å–ç‰¹å®šä¸€å¤©çš„é€ç¬”æˆäº¤æ•°æ®, ä¾‹å¦‚(2016å¹´4æœˆ12æ—¥)"<<endl;
-	cout<<"5). è·å–ç‰¹å®šä¸€æ®µæ—¶é—´é—´éš”æ‰€æœ‰è‚¡ç¥¨çš„Kçº¿æ•°æ®, ä¾‹å¦‚(ä»2015/06/01åˆ°2016/01/31)"<<endl;
-	cout<<"6). è·å–ä¸»åŠ¨æˆäº¤é¢(first 15 minutes and 30 minutes after open, last 15 minutes and 30 minutes before close)"<<endl;
+	cout<<"ÇëÑ¡ÔñÔËĞĞÄ£Ê½:(ÊäÈë1»òÕß2»òÕß3»òÕß4»òÕß5)"<<endl;
+	cout<<"1). »ñÈ¡Ò»¶ÎÊ±¼ä¼ä¸ôµÄÖğ±Ê³É½»Êı¾İ, ÀıÈç(´Ó2015Äê6ÔÂµ½2016Äê1ÔÂ)"<<endl;
+	cout<<"2). »ñÈ¡ÌØ¶¨Ò»¸öÔÂµÄÖğ±Ê³É½»Êı¾İ, ÀıÈç(2015Äê5ÔÂ)"<<endl;
+	cout<<"3). »ñÈ¡ÌØ¶¨Ò»¸öÔÂ·İµÄ\"ÌØ¶¨\"¹ÉÆ±¿ªÊ¼µÄÖğ±Ê³É½»Êı¾İ,ÀıÈç(2015Äê5ÔÂ, ´Ó603026.SH¿ªÊ¼»ñÈ¡)"<<endl;
+	cout<<"4). »ñÈ¡ÌØ¶¨Ò»ÌìµÄÖğ±Ê³É½»Êı¾İ, ÀıÈç(2016Äê4ÔÂ12ÈÕ)"<<endl;
+	cout<<"5). »ñÈ¡ÌØ¶¨Ò»¶ÎÊ±¼ä¼ä¸ôËùÓĞ¹ÉÆ±µÄKÏßÊı¾İ, ÀıÈç(´Ó2015/06/01µ½2016/01/31)"<<endl;
+	cout<<"6). »ñÈ¡Ò»¶ÎÊ±¼ä¼ä¸ôµÄ(last 15 minutes and 30 minutes before close)µÄÖğ±Ê³É½»Êı¾İ"<<endl;
 }
 InputParameter readInput() {
 	usage();
@@ -47,9 +47,9 @@ InputParameter readInput() {
 	if (type == 1) {
 		string startTime;
 		string endTime;
-		cout<<"è¯·è¾“å…¥å¼€å§‹æ—¶é—´(ä¾‹å¦‚: 2015/6): ";
+		cout<<"ÇëÊäÈë¿ªÊ¼Ê±¼ä(ÀıÈç: 2015/6): ";
 		cin>>startTime;
-		cout<<"è¯·è¾“å…¥ç»“æŸæ—¶é—´(ä¾‹å¦‚: 2015/12): ";
+		cout<<"ÇëÊäÈë½áÊøÊ±¼ä(ÀıÈç: 2015/12): ";
 		cin>>endTime;
 		input.type = 1;
 		input.startYear  = atoi(startTime.substr(0, 4).c_str());
@@ -57,26 +57,26 @@ InputParameter readInput() {
 		input.endYear    = atoi(endTime.substr(0, 4).c_str());
 		input.endMonth   = atoi(endTime.substr(5, 7).c_str());
 	} else if (type == 2) {
-		printf("è¯·è¾“å…¥å¹´ä»½?(HINT:2016, 2015, 2014, 2013)\n");
+		printf("ÇëÊäÈëÄê·İ?(HINT:2016, 2015, 2014, 2013)\n");
 		cin>>year;
-		printf("è¯·è¾“å…¥æœˆä»½?(HINT: 1åˆ°12)\n");
+		printf("ÇëÊäÈëÔÂ·İ?(HINT: 1µ½12)\n");
 		cin>>month;
 		input.type = 2;
 		input.startYear = year;
 		input.startMonth = month;
 	} else if (type == 3) {
 		input.type = 3;
-		printf("è¯·è¾“å…¥è‚¡ç¥¨ä»£ç , ä¾‹å¦‚(603028.SH): ");
+		printf("ÇëÊäÈë¹ÉÆ±´úÂë, ÀıÈç(603028.SH): ");
 		cin>>input.stockCode;
-		printf("è¯·è¾“å…¥å¹´ä»½?(HINT:2016, 2015, 2014, 2013)\n");
+		printf("ÇëÊäÈëÄê·İ?(HINT:2016, 2015, 2014, 2013)\n");
 		cin>>year;
-		printf("è¯·è¾“å…¥æœˆä»½?(HINT: 1åˆ°12)\n");
+		printf("ÇëÊäÈëÔÂ·İ?(HINT: 1µ½12)\n");
 		cin>>month;
 		input.startYear = year;
 		input.startMonth = month;
 	} else if (type == 4) {
 		input.type = 4;
-		printf("è¯·è¾“å…¥æŒ‡å®šçš„æ—¥æœŸ, ä¾‹å¦‚(2015/6/18): ");
+		printf("ÇëÊäÈëÖ¸¶¨µÄÈÕÆÚ, ÀıÈç(2015/6/18): ");
 		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
 		//string str;
 		//cin>>str;
@@ -88,11 +88,11 @@ InputParameter readInput() {
 		input.type = 5;
 		string startTime;
 		string endTime;
-		cout<<"è¯·è¾“å…¥å¼€å§‹æ—¶é—´(ä¾‹å¦‚: 2015/06/01): ";
+		cout<<"ÇëÊäÈë¿ªÊ¼Ê±¼ä(ÀıÈç: 2015/06/01): ";
 		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
-		cout<<"è¯·è¾“å…¥ç»“æŸæ—¶é—´(ä¾‹å¦‚: 2015/12/31): ";
+		cout<<"ÇëÊäÈë½áÊøÊ±¼ä(ÀıÈç: 2015/12/31): ";
 		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
-		cout<<"è¯·è¾“æ•°æ®é—´éš”å‘¨æœŸ(HINT:å–å€¼èŒƒå›´0åˆ°60): ";
+		cout<<"ÇëÊäÊı¾İ¼ä¸ôÖÜÆÚ(HINT:È¡Öµ·¶Î§0µ½60): ";
 		cin>>input.cycleNumber;
 	} 
 	else if (type == 6)
@@ -100,9 +100,9 @@ InputParameter readInput() {
 		input.type = 6;
 		string startTime;
 		string endTime;
-		cout<<"è¯·è¾“å…¥å¼€å§‹æ—¶é—´(ä¾‹å¦‚: 2015/6): ";
+		cout<<"ÇëÊäÈë¿ªÊ¼Ê±¼ä(ÀıÈç: 2015/6): ";
 		cin>>startTime;
-		cout<<"è¯·è¾“å…¥ç»“æŸæ—¶é—´(ä¾‹å¦‚: 2015/12): ";
+		cout<<"ÇëÊäÈë½áÊøÊ±¼ä(ÀıÈç: 2015/12): ";
 		cin>>endTime;
 		input.startYear  = atoi(startTime.substr(0, 4).c_str());
 		input.startMonth = atoi(startTime.substr(5, 7).c_str());
@@ -117,7 +117,7 @@ int getCurrentDay()
 	struct tm* now = localtime( &t );
 	return (now->tm_year + 1900)*100*100 + (now->tm_mon+1) * 100 + now->tm_mday;
 }
-//è·å–æ‰€æœ‰è¯åˆ¸çš„ä»£ç 
+//»ñÈ¡ËùÓĞÖ¤È¯µÄ´úÂë
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 {
 	fstream fcin(fileName, fstream::in);
@@ -148,7 +148,7 @@ void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName)
 	fcout.close();
 }
 
-//è¯·æ±‚ä»£ç è¡¨
+//ÇëÇó´úÂë±í
 vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
 {
 	TDBDefine_Code* pCodetable = NULL;
@@ -160,22 +160,22 @@ vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket)
 
 	if (ret == TDB_NO_DATA)
 	{
-		printf("æ— ä»£ç è¡¨ï¼");
+		printf("ÎŞ´úÂë±í£¡");
 		return res;
 	}
 	printf("---------------------------Code Table--------------------\n");
-	printf("æ”¶åˆ°ä»£ç è¡¨é¡¹æ•°ï¼š%d\n",pCount);
+	printf("ÊÕµ½´úÂë±íÏîÊı£º%d\n",pCount);
 
 	for (int i=0;i<pCount;i++)
 	{
 		if(pCodetable[i].nType != 0x10)
 			continue;
-		/*printf("ä¸‡å¾—ä»£ç  chWindCode:%s \n", pCodetable[i].chWindCode);	
-		printf("äº¤æ˜“æ‰€ä»£ç  chWindCode:%s \n", pCodetable[i].chCode);			
-		printf("å¸‚åœºä»£ç  chWindCode:%s \n", pCodetable[i].chMarket);
-		printf("è¯åˆ¸ä¸­æ–‡åç§° chWindCode:%s \n", pCodetable[i].chCNName);
-		printf("è¯åˆ¸è‹±æ–‡åç§° chWindCode:%s \n", pCodetable[i].chENName);
-		printf("è¯åˆ¸ç±»å‹ chWindCode:%d \n", pCodetable[i].nType);
+		/*printf("ÍòµÃ´úÂë chWindCode:%s \n", pCodetable[i].chWindCode);	
+		printf("½»Ò×Ëù´úÂë chWindCode:%s \n", pCodetable[i].chCode);			
+		printf("ÊĞ³¡´úÂë chWindCode:%s \n", pCodetable[i].chMarket);
+		printf("Ö¤È¯ÖĞÎÄÃû³Æ chWindCode:%s \n", pCodetable[i].chCNName);
+		printf("Ö¤È¯Ó¢ÎÄÃû³Æ chWindCode:%s \n", pCodetable[i].chENName);
+		printf("Ö¤È¯ÀàĞÍ chWindCode:%d \n", pCodetable[i].nType);
 		printf("----------------------------------------\n");*/
 		res.push_back(pCodetable[i]);
 	}
@@ -191,10 +191,10 @@ void StoreCodeTable(const vector<TDBDefine_Code> stockCodes, const string& fileN
 	}
 	fcout.close();
 }
-//ç™»å½•
+//µÇÂ¼
 THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord)
 {
-	//è®¾ç½®æœåŠ¡å™¨ä¿¡æ¯
+	//ÉèÖÃ·şÎñÆ÷ĞÅÏ¢
 	OPEN_SETTINGS settings = {0};
 	strcpy(settings.szIP, ipAddress.c_str());
 	sprintf(settings.szPort, "%d", port);
@@ -210,35 +210,35 @@ THANDLE logIn(const string& ipAddress, int port, const string& userName, const s
 
 	if (hTdb)
 	{
-		printf("ç™»å½•æˆåŠŸ!\n");
+		printf("µÇÂ¼³É¹¦!\n");
 		return hTdb;
 	}
-	printf("ç™»å½•å¤±è´¥!\n");
+	printf("µÇÂ¼Ê§°Ü!\n");
 	return NULL;
 }
 
 void showTranscation(const TDBDefine_Transaction& trans)
 {
 	printf("---------------------------------------Transaction Data------------------------------------------\n");
-	printf("æˆäº¤æ—¶é—´(Date): %d \n", trans.nDate);
-	printf("æˆäº¤æ—¶é—´: %d \n", trans.nTime);
-	printf("æˆäº¤ä»£ç : %c \n", trans.chFunctionCode);
-	printf("å§”æ‰˜ç±»åˆ«: %c \n", trans.chOrderKind);
-	printf("BSæ ‡å¿—: %c \n", trans.chBSFlag);
-	printf("æˆäº¤ä»·æ ¼: %d \n", trans.nTradePrice);
-	printf("æˆäº¤æ•°é‡: %d \n", trans.nTradeVolume);
-	printf("å«å–åºå·: %d \n", trans.nAskOrder);
-	printf("å«ä¹°åºå·: %d \n", trans.nBidOrder);
-	printf("æˆäº¤ç¼–å·: %d \n", trans.nIndex);
+	printf("³É½»Ê±¼ä(Date): %d \n", trans.nDate);
+	printf("³É½»Ê±¼ä: %d \n", trans.nTime);
+	printf("³É½»´úÂë: %c \n", trans.chFunctionCode);
+	printf("Î¯ÍĞÀà±ğ: %c \n", trans.chOrderKind);
+	printf("BS±êÖ¾: %c \n", trans.chBSFlag);
+	printf("³É½»¼Û¸ñ: %d \n", trans.nTradePrice);
+	printf("³É½»ÊıÁ¿: %d \n", trans.nTradeVolume);
+	printf("½ĞÂôĞòºÅ: %d \n", trans.nAskOrder);
+	printf("½ĞÂòĞòºÅ: %d \n", trans.nBidOrder);
+	printf("³É½»±àºÅ: %d \n", trans.nIndex);
 	printf("------------------------------------------------------\n");
 }
 
-//å¸¦ä¹°å–ç›˜çš„tick
+//´øÂòÂôÅÌµÄtick
 void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate)
 {
-	//è¯·æ±‚ä¿¡æ¯
+	//ÇëÇóĞÅÏ¢
 	TDBDefine_ReqTick req = {0};
-	strncpy(req.chCode, szCode, sizeof(req.chCode)); //ä»£ç å†™æˆä½ æƒ³è·å–çš„è‚¡ç¥¨ä»£ç 
+	strncpy(req.chCode, szCode, sizeof(req.chCode)); //´úÂëĞ´³ÉÄãÏë»ñÈ¡µÄ¹ÉÆ±´úÂë
 	strncpy(req.chMarketKey, szMarket, sizeof(req.chMarketKey));
 	req.nDate = nDate;
 	req.nBeginTime = 0;
@@ -249,63 +249,63 @@ void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate)
 	int ret = TDB_GetTick(hTdb,&req,&pTick, &pCount);
 
 	printf("---------------------------------------Tick Data------------------------------------------\n");
-	printf("å…±æ”¶åˆ° %d æ¡Tickæ•°æ®ï¼Œ æ‰“å° 1/100 æ¡ï¼š\n", pCount);
+	printf("¹²ÊÕµ½ %d ÌõTickÊı¾İ£¬ ´òÓ¡ 1/100 Ìõ£º\n", pCount);
 
 	for(int i=0; i<pCount;)
 	{
 		TDBDefine_Tick& pTickCopy = pTick[i];
-		printf("ä¸‡å¾—ä»£ç  chWindCode:%s \n", pTickCopy.chWindCode);
-		printf("æ—¥æœŸ nDate:%d \n", pTickCopy.nDate);
-		printf("æ—¶é—´ nTime:%d \n", pTickCopy.nTime);
+		printf("ÍòµÃ´úÂë chWindCode:%s \n", pTickCopy.chWindCode);
+		printf("ÈÕÆÚ nDate:%d \n", pTickCopy.nDate);
+		printf("Ê±¼ä nTime:%d \n", pTickCopy.nTime);
 
-		printf("æˆäº¤ä»· nPrice:%d \n", pTickCopy.nPrice);
-		printf("æˆäº¤é‡ iVolume:%I64d \n", pTickCopy.iVolume);
-		printf("æˆäº¤é¢(å…ƒ) iTurover:%I64d \n", pTickCopy.iTurover);
-		printf("æˆäº¤ç¬”æ•° nMatchItems:%d \n", pTickCopy.nMatchItems);
+		printf("³É½»¼Û nPrice:%d \n", pTickCopy.nPrice);
+		printf("³É½»Á¿ iVolume:%I64d \n", pTickCopy.iVolume);
+		printf("³É½»¶î(Ôª) iTurover:%I64d \n", pTickCopy.iTurover);
+		printf("³É½»±ÊÊı nMatchItems:%d \n", pTickCopy.nMatchItems);
 		printf(" nInterest:%d \n", pTickCopy.nInterest);
 
-		printf("æˆäº¤æ ‡å¿—: chTradeFlag:%c \n", pTickCopy.chTradeFlag);
-		printf("BSæ ‡å¿—: chBSFlag:%c \n", pTickCopy.chBSFlag);
-		printf("å½“æ—¥æˆäº¤é‡: iAccVolume:%I64d \n", pTickCopy.iAccVolume);
-		printf("å½“æ—¥æˆäº¤é¢: iAccTurover:%I64d \n", pTickCopy.iAccTurover);
+		printf("³É½»±êÖ¾: chTradeFlag:%c \n", pTickCopy.chTradeFlag);
+		printf("BS±êÖ¾: chBSFlag:%c \n", pTickCopy.chBSFlag);
+		printf("µ±ÈÕ³É½»Á¿: iAccVolume:%I64d \n", pTickCopy.iAccVolume);
+		printf("µ±ÈÕ³É½»¶î: iAccTurover:%I64d \n", pTickCopy.iAccTurover);
 
-		printf("æœ€é«˜ nHigh:%d \n", pTickCopy.nHigh);
-		printf("æœ€ä½ nLow:%d \n", pTickCopy.nLow);
-		printf("å¼€ç›˜ nOpen:%d \n", pTickCopy.nOpen);
-		printf("å‰æ”¶ç›˜ nPreClose:%d \n", pTickCopy.nPreClose);
+		printf("×î¸ß nHigh:%d \n", pTickCopy.nHigh);
+		printf("×îµÍ nLow:%d \n", pTickCopy.nLow);
+		printf("¿ªÅÌ nOpen:%d \n", pTickCopy.nOpen);
+		printf("Ç°ÊÕÅÌ nPreClose:%d \n", pTickCopy.nPreClose);
 
-		//ä¹°å–ç›˜å­—æ®µ
+		//ÂòÂôÅÌ×Ö¶Î
 		std::string strOut= array2str(pTickCopy.nAskPrice,ELEMENT_COUNT(pTickCopy.nAskPrice));
-		printf("å«å–ä»· nAskPrice:%s \n", strOut.c_str());
+		printf("½ĞÂô¼Û nAskPrice:%s \n", strOut.c_str());
 		strOut= array2str((const int*)pTickCopy.nAskVolume,ELEMENT_COUNT(pTickCopy.nAskVolume));
-		printf("å«å–é‡ nAskVolume:%s \n", strOut.c_str());
+		printf("½ĞÂôÁ¿ nAskVolume:%s \n", strOut.c_str());
 		strOut= array2str(pTickCopy.nBidPrice,ELEMENT_COUNT(pTickCopy.nBidPrice));
-		printf("å«ä¹°ä»· nBidPrice:%s \n", strOut.c_str());
+		printf("½ĞÂò¼Û nBidPrice:%s \n", strOut.c_str());
 		strOut= array2str((const int*)pTickCopy.nBidVolume,ELEMENT_COUNT(pTickCopy.nBidVolume));
-		printf("å«ä¹°é‡ nBidVolume:%s \n", strOut.c_str());
-		printf("åŠ æƒå¹³å‡å«å–ä»· nAskAvPrice:%d \n", pTickCopy.nAskAvPrice);
-		printf("åŠ æƒå¹³å‡å«ä¹°ä»· nBidAvPrice:%d \n", pTickCopy.nBidAvPrice);
-		printf("å«å–æ€»é‡ iTotalAskVolume:%I64d \n", pTickCopy.iTotalAskVolume);
-		printf("å«ä¹°æ€»é‡ iTotalBidVolume:%I64d \n", pTickCopy.iTotalBidVolume);
+		printf("½ĞÂòÁ¿ nBidVolume:%s \n", strOut.c_str());
+		printf("¼ÓÈ¨Æ½¾ù½ĞÂô¼Û nAskAvPrice:%d \n", pTickCopy.nAskAvPrice);
+		printf("¼ÓÈ¨Æ½¾ù½ĞÂò¼Û nBidAvPrice:%d \n", pTickCopy.nBidAvPrice);
+		printf("½ĞÂô×ÜÁ¿ iTotalAskVolume:%I64d \n", pTickCopy.iTotalAskVolume);
+		printf("½ĞÂò×ÜÁ¿ iTotalBidVolume:%I64d \n", pTickCopy.iTotalBidVolume);
 #if 0
-		//æœŸè´§å­—æ®µ
-		printf("ç»“ç®—ä»· nSettle:%d \n", pTickCopy.nSettle);
-		printf("æŒä»“é‡ nPosition:%d \n", pTickCopy.nPosition);
-		printf("è™šå®åº¦ nCurDelta:%d \n", pTickCopy.nCurDelta);
-		printf("æ˜¨ç»“ç®— nPreSettle:%d \n", pTickCopy.nPreSettle);
-		printf("æ˜¨æŒä»“ nPrePosition:%d \n", pTickCopy.nPrePosition);
+		//ÆÚ»õ×Ö¶Î
+		printf("½áËã¼Û nSettle:%d \n", pTickCopy.nSettle);
+		printf("³Ö²ÖÁ¿ nPosition:%d \n", pTickCopy.nPosition);
+		printf("ĞéÊµ¶È nCurDelta:%d \n", pTickCopy.nCurDelta);
+		printf("×ò½áËã nPreSettle:%d \n", pTickCopy.nPreSettle);
+		printf("×ò³Ö²Ö nPrePosition:%d \n", pTickCopy.nPrePosition);
 
-		//æŒ‡æ•°
-		printf("ä¸åŠ æƒæŒ‡æ•° nIndex:%d \n", pTickCopy.nIndex);
-		printf("å“ç§æ€»æ•° nStocks:%d \n", pTickCopy.nStocks);
-		printf("ä¸Šæ¶¨å“ç§æ•° nUps:%d \n", pTickCopy.nUps);
-		printf("ä¸‹è·Œå“ç§æ•° nDowns:%d \n", pTickCopy.nDowns);
-		printf("æŒå¹³å“ç§æ•° nHoldLines:%d \n", pTickCopy.nHoldLines);
+		//Ö¸Êı
+		printf("²»¼ÓÈ¨Ö¸Êı nIndex:%d \n", pTickCopy.nIndex);
+		printf("Æ·ÖÖ×ÜÊı nStocks:%d \n", pTickCopy.nStocks);
+		printf("ÉÏÕÇÆ·ÖÖÊı nUps:%d \n", pTickCopy.nUps);
+		printf("ÏÂµøÆ·ÖÖÊı nDowns:%d \n", pTickCopy.nDowns);
+		printf("³ÖÆ½Æ·ÖÖÊı nHoldLines:%d \n", pTickCopy.nHoldLines);
 #endif
 		printf("-------------------------------\n");
 		i += 1000;
 	}
-	//é‡Šæ”¾
+	//ÊÍ·Å
 	TDB_Free(pTick);
 }
 
@@ -333,11 +333,11 @@ string array2str(const int* arr, int len)
 	return str;
 }
 
-//é€ç¬”æˆäº¤
+//Öğ±Ê³É½»
 vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate)
 {
-	TDBDefine_ReqTransaction req = {0}; //è¯·æ±‚
-	strncpy(req.chCode, szCode, sizeof(req.chCode)); //ä»£ç å†™æˆä½ æƒ³è·å–çš„è‚¡ç¥¨ä»£ç 
+	TDBDefine_ReqTransaction req = {0}; //ÇëÇó
+	strncpy(req.chCode, szCode, sizeof(req.chCode)); //´úÂëĞ´³ÉÄãÏë»ñÈ¡µÄ¹ÉÆ±´úÂë
 	strncpy(req.chMarketKey, szMarketKey, sizeof(req.chMarketKey));
 	req.nDate = nDate;
 	req.nBeginTime = 0;
@@ -349,11 +349,11 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 
 	/*if (pTransaction && pCount && pTransaction[pCount-1].nTradeVolume > 0)
 	{
-	printf("é”™è¯¯code:%s\n", req.chCode);
+	printf("´íÎócode:%s\n", req.chCode);
 	strncpy(ErrCode[ErrNum++], req.chCode, sizeof(req.chCode));
 	}*/
 
-	//printf("inside: %s, nDate = %d, æ”¶åˆ° %d æ¡é€ç¬”æˆäº¤æ¶ˆæ¯\n", __func__, nDate, pCount);
+	//printf("inside: %s, nDate = %d, ÊÕµ½ %d ÌõÖğ±Ê³É½»ÏûÏ¢\n", __func__, nDate, pCount);
 
 	vector<TDBDefine_Transaction> vec;
 	for (int i=0; i < pCount; i++)
@@ -362,12 +362,12 @@ vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* s
 		//showTranscation(trans);
 		vec.push_back(trans);
 	}
-	//é‡Šæ”¾
+	//ÊÍ·Å
 	TDB_Free(pTransaction);
 	return vec;
 }
 
-//è·å–è‡ªä¸Šå¸‚æ—¥èµ·æ‰€æœ‰çš„é€ç¬”æˆäº¤
+//»ñÈ¡×ÔÉÏÊĞÈÕÆğËùÓĞµÄÖğ±Ê³É½»
 map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int year, int month)
 {
 	map<int, vector<TDBDefine_Transaction>> resMap;
@@ -503,25 +503,25 @@ int isValid(int yy, int mm, int dd) {
 
 vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycleType, int nCycleNumber, int nCQFlag, int nAutoComplete)
 {
-	//è¯·æ±‚Kçº¿
+	//ÇëÇóKÏß
 	TDBDefine_ReqKLine* req = new TDBDefine_ReqKLine;
 	strncpy(req->chCode, szCode, ELEMENT_COUNT(req->chCode));
 	strncpy(req->chMarketKey, szMarket, ELEMENT_COUNT(req->chMarketKey));
 
-	req->nCQFlag = (REFILLFLAG)nCQFlag;//é™¤æƒæ ‡å¿—ï¼Œç”±ç”¨æˆ·å®šä¹‰
-	req->nBeginDate = nBeginDate;//å¼€å§‹æ—¥æœŸ
-	req->nEndDate = nEndDate;//ç»“æŸæ—¥æœŸ
-	req->nBeginTime = 0;//å¼€å§‹æ—¶é—´
-	req->nEndTime = 0;//ç»“æŸæ—¶é—´
+	req->nCQFlag = (REFILLFLAG)nCQFlag;//³ıÈ¨±êÖ¾£¬ÓÉÓÃ»§¶¨Òå
+	req->nBeginDate = nBeginDate;//¿ªÊ¼ÈÕÆÚ
+	req->nEndDate = nEndDate;//½áÊøÈÕÆÚ
+	req->nBeginTime = 0;//¿ªÊ¼Ê±¼ä
+	req->nEndTime = 0;//½áÊøÊ±¼ä
 
 	req->nCycType = (CYCTYPE)nCycleType;
 	req->nCycDef = nCycleNumber;
 
-	//è¿”å›ç»“æ„ä½“æŒ‡é’ˆ
+	//·µ»Ø½á¹¹ÌåÖ¸Õë
 	TDBDefine_KLine* kLine = NULL;
-	//è¿”å›æ•°
+	//·µ»ØÊı
 	int pCount;
-	//APIè¯·æ±‚Kçº¿
+	//APIÇëÇóKÏß
 	TDB_GetKLine(hTdb, req, &kLine, &pCount);
 	//printf("GetKData: result number: %d, szCode: %s\n", pCount, szCode);
 	delete req;
@@ -559,30 +559,29 @@ vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int
 		//}
 	}
 
-	//é‡Šæ”¾
+	//ÊÍ·Å
 	TDB_Free(kLine);
 	return res;
 }
 
 void writeFileHeaderForTask1(fstream& fcout)
 {
-	fcout<<"è‚¡ç¥¨åå­—;æ—¥æœŸ;<1ä¸‡ä¹°;<1ä¸‡å–;1ä¸‡~2ä¸‡ä¹°;1ä¸‡~2ä¸‡å–;2ä¸‡~3ä¸‡ä¹°;2ä¸‡~3ä¸‡å–;3ä¸‡~4ä¸‡ä¹°;3ä¸‡~4ä¸‡å–;4ä¸‡~5ä¸‡ä¹°;4ä¸‡~5ä¸‡å–;5ä¸‡~6ä¸‡ä¹°;5ä¸‡~6ä¸‡å–;6ä¸‡~7ä¸‡ä¹°;6ä¸‡~7ä¸‡å–;7ä¸‡~8ä¸‡ä¹°;7ä¸‡~8ä¸‡å–;8ä¸‡~9ä¸‡ä¹°;8ä¸‡~9ä¸‡å–;9ä¸‡~10ä¸‡ä¹°;9ä¸‡~10ä¸‡å–;";
-	fcout<<"10ä¸‡~20ä¸‡ä¹°;10ä¸‡~20ä¸‡å–;20ä¸‡~30ä¸‡ä¹°;20ä¸‡~30ä¸‡å–;30ä¸‡~40ä¸‡ä¹°;30ä¸‡~40ä¸‡å–;40ä¸‡~50ä¸‡ä¹°;40ä¸‡~50ä¸‡å–;50ä¸‡~60ä¸‡ä¹°;50ä¸‡~60ä¸‡å–;60ä¸‡~70ä¸‡ä¹°;60ä¸‡~70ä¸‡å–;70ä¸‡~80ä¸‡ä¹°;70ä¸‡~80ä¸‡å–;80ä¸‡~90ä¸‡ä¹°;80ä¸‡~90ä¸‡å–;90ä¸‡~100ä¸‡ä¹°;90ä¸‡~100ä¸‡å–;>100ä¸‡ä¹°;>100ä¸‡å–"<<endl;
+	fcout<<"¹ÉÆ±Ãû×Ö;ÈÕÆÚ;<1ÍòÂò;<1ÍòÂô;1Íò~2ÍòÂò;1Íò~2ÍòÂô;2Íò~3ÍòÂò;2Íò~3ÍòÂô;3Íò~4ÍòÂò;3Íò~4ÍòÂô;4Íò~5ÍòÂò;4Íò~5ÍòÂô;5Íò~6ÍòÂò;5Íò~6ÍòÂô;6Íò~7ÍòÂò;6Íò~7ÍòÂô;7Íò~8ÍòÂò;7Íò~8ÍòÂô;8Íò~9ÍòÂò;8Íò~9ÍòÂô;9Íò~10ÍòÂò;9Íò~10ÍòÂô;";
+	fcout<<"10Íò~20ÍòÂò;10Íò~20ÍòÂô;20Íò~30ÍòÂò;20Íò~30ÍòÂô;30Íò~40ÍòÂò;30Íò~40ÍòÂô;40Íò~50ÍòÂò;40Íò~50ÍòÂô;50Íò~60ÍòÂò;50Íò~60ÍòÂô;60Íò~70ÍòÂò;60Íò~70ÍòÂô;70Íò~80ÍòÂò;70Íò~80ÍòÂô;80Íò~90ÍòÂò;80Íò~90ÍòÂô;90Íò~100ÍòÂò;90Íò~100ÍòÂô;>100ÍòÂò;>100ÍòÂô"<<endl;
 }
 
 void getLast15And30(const vector<TDBDefine_Transaction>& transVec, vector<TDBDefine_Transaction>& last15, vector<TDBDefine_Transaction>& last30)
 {
 	const int FLAG = 100000;
-	for(vector<TDBDefine_Transaction>::iterator iter = transVec.begin(); iter != transVec.end(); iter++)
+	for(vector<TDBDefine_Transaction>::const_iterator iter = transVec.begin(); iter != transVec.end(); iter++)
 	{
-		if( iter->nTime >= 1445 * FLAG)
+		if(iter->nTime >= 1445 * FLAG)
 		{
 			last15.push_back(*iter);
 		}
-		if ( iter->nTime >= 1430 * FLAG)
+		if(iter->nTime >= 1430 * FLAG)
 		{
 			last30.push_back(*iter);
-
 		}
 	}
 }

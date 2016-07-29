@@ -103,6 +103,32 @@ void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap
 		fcout<<endl;
 	}
 }
+void anslyseAllTransactions(map<int, vector<TDBDefine_Transaction>>& allTransMap, const string& windName, fstream& fcout)
+{
+	map<int, vector<TDBDefine_Transaction>>::iterator iter = allTransMap.begin();
+
+	for(;iter != allTransMap.end(); iter++)
+	{
+		Order bigger, big, medium, low;
+		vector<Order> orders(20);
+		int key = iter->first;
+		vector<TDBDefine_Transaction> value = iter->second;
+
+		for(vector<TDBDefine_Transaction>::iterator iter2 = value.begin(); iter2 != value.end(); iter2++)
+		{
+			OrderType orderType = checkOrderType(iter2->nTradeVolume);
+			orders.at(orderType).orderType = orderType;
+			(orders.at(orderType).data).push_back(*iter2);
+		}
+		fcout<<windName<<";"<<key;
+		for(int i = 0; i < 20; i++)
+		{
+			calBuyAndSellValue(orders.at(i));
+			fcout<<";"<<orders.at(i).buyValue<<";"<<orders.at(i).sellValue;
+		}
+		fcout<<endl;
+	}
+}
 void anslyseAllTransactionsByMonth(THANDLE& hTdb, int year, int month)
 {
 	string resultName = string(".\\task1\\") + int2str(year*100 + month) + string(".txt");
@@ -117,6 +143,51 @@ void anslyseAllTransactionsByMonth(THANDLE& hTdb, int year, int month)
 		allTransMap.clear();
 	}
 	fcout.close();
+}
+
+void anslyseAllTransactionsByMonthTask3(THANDLE& hTdb, int year, int month)
+{
+	fstream fcoutLast15, fcoutLast30;
+	char last15ResultName[100] = {'\0'};
+	sprintf(last15ResultName, ".\\task3\\last15\\%d%02d.txt", year, month);
+	fcoutLast15.open(last15ResultName, fstream::out);
+	writeFileHeaderForTask1(fcoutLast15);
+
+	char last30ResultName[100] = {'\0'};
+	sprintf(last30ResultName, ".\\task3\\last30\\%d%02d.txt", year, month);
+	fcoutLast30.open(last30ResultName, fstream::out);
+	writeFileHeaderForTask1(fcoutLast30);
+
+	map<int, vector<TDBDefine_Transaction>> allTransMap;
+
+	map<int, vector<TDBDefine_Transaction>> last15transMap;
+	map<int, vector<TDBDefine_Transaction>> last30transMap;
+
+	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
+	{ 
+		allTransMap = GetAllTransactions(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), year, month);
+		
+		//»ñÈ¡last15ºÍlast30µÄÊý¾Ý
+		for(auto mapIter = allTransMap.begin(); mapIter != allTransMap.end(); mapIter++)
+		{
+			vector<TDBDefine_Transaction> last15;  //ÈÕ
+			vector<TDBDefine_Transaction> last30;  //ÈÕ
+
+			getLast15And30(mapIter->second, last15, last30);
+			last15transMap[mapIter->first] = last15;
+			last30transMap[mapIter->first] = last30;
+
+			cout<<mapIter->first<<" "<<last15.size()<<" "<<last30.size()<<endl;
+		}
+		anslyseAllTransactions(last15transMap, changeStockCode(iter->stockCode), fcoutLast15);
+		anslyseAllTransactions(last30transMap, changeStockCode(iter->stockCode), fcoutLast30);
+
+		allTransMap.clear();
+		last15transMap.clear();
+		last30transMap.clear();
+	}
+	fcoutLast15.close();
+	fcoutLast30.close();
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -206,7 +277,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			int cycleNumber = inputParameter.cycleNumber;
 
 			vector<pair<int, int>> timeVec = timeRange2(startYear, startMonth, startDay, endYear, endMonth, endDay);
-			
+
 			for(auto dayIter = timeVec.begin(); dayIter != timeVec.end(); dayIter++)
 			{
 				for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++)
@@ -227,86 +298,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		else if (inputParameter.type == 6)
 		{
 			vector<pair<int, int>> timeVec = timeRange(inputParameter.startYear, inputParameter.startMonth, inputParameter.endYear, inputParameter.endMonth);
-			for (int i = 0; i < timeVec.size(); ++i) //å¹´æœˆ
+			for(int i = 0; i < timeVec.size(); i++)
 			{
-				map<int, vector<TDBDefine_Transaction>> last15transMap;
-				map<int, vector<TDBDefine_Transaction>> last30transMap;
-
-				vector<TDBDefine_Transaction> transVec;
-				for(int j = 1; j <= 31; j++)  //æ—¥
-				{
-					int day = i.first * 10000 + i.second * 100 + j;
-					for (auto stockIter = allStockTikers.begin(); stockIter != allStockTikers.end(); stockIter++)
-					{
-						transVec = GetTransaction(hTdb, (char*)(stockIter->stockCode).c_str(), (char*)(stockIter->stockType).c_str(), day);
-					}
-					vector<TDBDefine_Transaction> last15;
-					vector<TDBDefine_Transaction> last30;
-					getLast15And30(transVec, last15, last30);
-					last15transMap[day] = last15;
-					last30transMap[day] = last30;
-				}
-				transVec.clear();
-			}
-
-
-
-
-			
-			
-			for (auto stockIter = allStockTikers.begin(); stockIter != allStockTikers.end(); stockIter++)
-			{	
-				if(stockIter->stockCode != "600602.SH")
-					continue;
-				vector<TDBDefine_Transaction> transVec = GetTransaction(hTdb, (char*)(stockIter->stockCode).c_str(), (char*)(stockIter->stockType).c_str(), 20160627);
-				vector<TDBDefine_Transaction> first15;
-				vector<TDBDefine_Transaction> first30;
-				vector<TDBDefine_Transaction> last15;
-				vector<TDBDefine_Transaction> last30;
-				for(vector<TDBDefine_Transaction>::iterator iter = transVec.begin(); iter != transVec.end(); iter++)
-				{
-					const int FLAG = 100000;
-					int hourAndMinute = iter->nTime / 100000;
-					if( iter->nTime >= 1445 * FLAG)
-					{
-						last15.push_back(*iter);
-					}
-					if ( iter->nTime >= 1430 * FLAG)
-					{
-						last30.push_back(*iter);
-
-					}
-					if (iter->nTime >= 925 * FLAG && iter->nTime <= 945 * FLAG)
-					{
-						first15.push_back(*iter);
-					}
-					if (iter->nTime >= 925 * FLAG && iter->nTime <= 1000 * FLAG)
-					{
-						first30.push_back(*iter);
-					}
-				}
-
-				double first30Res = 0;
-				for_each(first30.begin(), first30.end(), [&first30Res](const TDBDefine_Transaction& element) {
-						if(element.chBSFlag == 'B')
-							first30Res += (element.nTradeVolume * ((double)element.nTradePrice / 10000));
-						else if(element.chBSFlag == 'S')
-							first30Res -= (element.nTradeVolume * ((double)element.nTradePrice / 10000));
-					});
-
-				double last30Res = 0;
-				for_each(last30.begin(), last30.end(), [&last30Res](const TDBDefine_Transaction& element) {
-						if(element.chBSFlag == 'B')
-							last30Res += (element.nTradeVolume * ((double)element.nTradePrice / 10000));
-						else if(element.chBSFlag == 'S')
-							last30Res -= (element.nTradeVolume * ((double)element.nTradePrice / 10000));
-					});
-				cout<<(long long)first30Res<<" "<<(long long)last30Res<<endl;
-
+				cout<<i<<" "<<timeVec.at(i).first<<" "<<timeVec.at(i).second<<endl;
+				anslyseAllTransactionsByMonthTask3(hTdb, timeVec.at(i).first, timeVec.at(i).second);
 			}
 		}
 	}
-	cout<<string(50, '*')<<endl<<"                  Ã”Ã‹ÃÃÃÃªÂ³Ã‰!          "<<endl<<string(50, '*')<<endl;
+	cout<<string(50, '*')<<endl<<"                  ÔËÐÐÍê³É!          "<<endl<<string(50, '*')<<endl;
 	TDB_Close(hTdb);
 	return 0;
 }
