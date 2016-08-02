@@ -26,7 +26,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 void usage() {
 	cout<<string(50, '-')<<endl;
-	cout<<"请选择运行模式:(输入1或者2或者3或者4或者5)"<<endl;
+	cout<<"请选择运行模式:(输入1或者2或者3或者4或者5或者6)"<<endl;
 	cout<<"1). 获取一段时间间隔的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
 	cout<<"2). 获取特定一个月的逐笔成交数据, 例如(2015年5月)"<<endl;
 	cout<<"3). 获取特定一个月份的\"特定\"股票开始的逐笔成交数据,例如(2015年5月, 从603026.SH开始获取)"<<endl;

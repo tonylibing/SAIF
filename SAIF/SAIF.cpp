@@ -194,8 +194,8 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	string ipAddress = "114.80.154.34";
 	int    port      = 6261;
-	string userName  = "TD1798799008";
-	string passWord  = "33773595";
+	string userName  = "TD1056611005";
+	string passWord  = "37264673";
 	THANDLE hTdb = logIn(ipAddress, port, userName, passWord);
 
 	GetAllStockTikers(allStockTikers, "ticker list.csv");
