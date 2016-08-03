@@ -4,3 +4,7 @@
 2016/7/28	6	implement task3 and start getting data.
 2016/7/29   1   contact winder to deal the account expired issue.
 2016/8/01   5   Implement the function for downloading option (daily frequency).
+
+
+2016/8/02   1   talk issue.
+2016/8/03   7   write code for add more options.
