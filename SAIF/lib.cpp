@@ -26,19 +26,21 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 void usage() {
 	cout<<string(50, '-')<<endl;
-	cout<<"请选择运行模式:(输入1或者2或者3或者4或者5或者6)"<<endl;
-	cout<<"1). 获取一段时间间隔的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
-	cout<<"2). 获取特定一个月的逐笔成交数据, 例如(2015年5月)"<<endl;
+	cout<<"请选择运行模式:(输入1或者2或者3或者4或者5或者6或者7或者8)"<<endl;
+	cout<<"1). 获取一段时间间隔所有股票的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
+	cout<<"2). 获取特定一个月所有股票的逐笔成交数据, 例如(2015年5月)"<<endl;
 	cout<<"3). 获取特定一个月份的\"特定\"股票开始的逐笔成交数据,例如(2015年5月, 从603026.SH开始获取)"<<endl;
-	cout<<"4). 获取特定一天的逐笔成交数据, 例如(2016年4月12日)"<<endl;
-	cout<<"5). 获取特定一段时间间隔所有股票的K线数据, 例如(从2015/06/01到2016/01/31)"<<endl;
-	cout<<"6). 获取一段时间间隔的(last 15 minutes and 30 minutes before close)的逐笔成交数据"<<endl;
+	cout<<"4). 获取连续几天所有股票的逐笔成交数据, 例如(从2016年4月12日到2016年4月24日)"<<endl;
+	cout<<"5). 获取连续几天所有股票的K线数据, 例如(从2015/06/01到2016/01/31)"<<endl;
+	cout<<"6). 获取一段时间间隔的所有股票的(last 15 and 30 minutes before close)的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
+	cout<<"7). 获取连续几天所有股票的(last 15 and 30 minutes before close)的逐笔成交数据, 例如(从2015/06/01到2015/06/10)"<<endl;
+//	cout<<"8). 获取连续几天所有股票的task1, task2, task3数据, 例如(从2015/06/01到2015/06/10)"<<endl;
 }
 InputParameter readInput() {
 	usage();
 	int type;
 	cin>>type;
-	if(type != 1 && type != 2 && type != 3 && type != 4 && type != 5 && type != 6)
+	if(type != 1 && type != 2 && type != 3 && type != 4 && type != 5 && type != 6 && type != 7 && type != 8)
 		readInput();
 
 	InputParameter input;
@@ -74,15 +76,13 @@ InputParameter readInput() {
 		cin>>month;
 		input.startYear = year;
 		input.startMonth = month;
-	} else if (type == 4) {
+	} else if (type == 4) 
+	{
 		input.type = 4;
-		printf("请输入指定的日期, 例如(2015/6/18): ");
+		printf("请输入开始日期, 例如(2015/6/18): ");
 		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
-		//string str;
-		//cin>>str;
-		//input.startYear  = atoi(str.substr(0, 4).c_str());
-		//input.startMonth = atoi(str.substr(5, 7).c_str());
-		//input.startDay = atoi(str.substr(8, 10).c_str());
+		cout<<"请输入结束日期, 例如(2015/6/31): ";
+		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
 	}
 	else if (type == 5) {
 		input.type = 5;
@@ -108,6 +108,28 @@ InputParameter readInput() {
 		input.startMonth = atoi(startTime.substr(5, 7).c_str());
 		input.endYear    = atoi(endTime.substr(0, 4).c_str());
 		input.endMonth   = atoi(endTime.substr(5, 7).c_str());
+	}
+	else if (type == 7)
+	{
+		input.type = 7;
+		string startTime;
+		string endTime;
+		cout<<"请输入开始时间(例如: 2015/06/01): ";
+		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
+		cout<<"请输入结束时间(例如: 2015/12/31): ";
+		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
+	}
+	else if (type == 8)
+	{
+		input.type = 8;
+		string startTime;
+		string endTime;
+		cout<<"请输入开始时间(例如: 2015/06/01): ";
+		scanf("%d/%d/%d", &input.startYear, &input.startMonth, &input.startDay);
+		cout<<"请输入结束时间(例如: 2015/06/11): ";
+		scanf("%d/%d/%d", &input.endYear, &input.endMonth, &input.endDay);
+		cout<<"请输数据间隔周期(HINT:取值范围0到60): ";
+		cin>>input.cycleNumber;
 	}
 	return input;
 }
@@ -425,47 +447,52 @@ vector<int> timeRange(int startY, int startM, int startD, int endY, int endM, in
 }
 vector<pair<int, int>> timeRange2(int startY, int startM, int startD, int endY, int endM, int endD)
 {
-    vector<pair<int, int>> res;
-    pair<int, int> element;
-    if (startY == endY && startM == endM) {
-        element.first = startY * 100 * 100 + startM * 100 + startD;
-        element.second = endY * 100 * 100 + endY * 100 + endD;
-        res.push_back(element);
-    } else if (startY == endY) {
-        element.first = startY * 100 * 100 + startM * 100 + startD;
-        element.second = startY * 100 * 100 + startM * 100 + 31;
-        res.push_back(element);
-        for (int m = startM + 1; m < endM; m++) {
-            element.first = startY * 100 * 100 + m * 100 + 1;
-            element.second = startY * 100 * 100 + m * 100 + 31;
-            res.push_back(element);
-        }
-        element.first = endY * 100 * 100 + endM * 100 + 1;
-        element.second = endY * 100 * 100 + endM * 100 + endD;
-        res.push_back(element);
-    } else {
-        element.first = startY * 100 * 100 + startM * 100 + startD;
-        element.second = startY * 100 * 100 + startM * 100 + 31;
-        res.push_back(element);
-        startM += 1;
-        if (startM > 12) {
-            startM = 1;
-            startY += 1;
-        }
-        while (startY < endY || (startY == endY && startM < endM)) {
-            element.first = startY * 100 * 100 + startM * 100 + 1;
-            element.second = startY * 100 * 100 + startM * 100 + 31;
-            res.push_back(element);
-            startM += 1;
-            if (startM > 12) {
-                startM = 1;
-                startY += 1;
-            }
-        }
-        element.first = endY * 100 * 100 + endM * 100 + 1;
-        element.second = endY * 100 * 100 + endM * 100 + endD;
-        res.push_back(element);
-    }
+	vector<pair<int, int>> res;
+	pair<int, int> element;
+	if (startY == endY && startM == endM && startD == endD) {
+		element.first = element.second = startY * 100 * 100 + startM * 100 + startD;
+		res.push_back(element);
+		return res;
+	}
+	else if (startY == endY && startM == endM) {
+		element.first = startY * 100 * 100 + startM * 100 + startD;
+		element.second = endY * 100 * 100 + endY * 100 + endD;
+		res.push_back(element);
+	} else if (startY == endY) {
+		element.first = startY * 100 * 100 + startM * 100 + startD;
+		element.second = startY * 100 * 100 + startM * 100 + 31;
+		res.push_back(element);
+		for (int m = startM + 1; m < endM; m++) {
+			element.first = startY * 100 * 100 + m * 100 + 1;
+			element.second = startY * 100 * 100 + m * 100 + 31;
+			res.push_back(element);
+		}
+		element.first = endY * 100 * 100 + endM * 100 + 1;
+		element.second = endY * 100 * 100 + endM * 100 + endD;
+		res.push_back(element);
+	} else {
+		element.first = startY * 100 * 100 + startM * 100 + startD;
+		element.second = startY * 100 * 100 + startM * 100 + 31;
+		res.push_back(element);
+		startM += 1;
+		if (startM > 12) {
+			startM = 1;
+			startY += 1;
+		}
+		while (startY < endY || (startY == endY && startM < endM)) {
+			element.first = startY * 100 * 100 + startM * 100 + 1;
+			element.second = startY * 100 * 100 + startM * 100 + 31;
+			res.push_back(element);
+			startM += 1;
+			if (startM > 12) {
+				startM = 1;
+				startY += 1;
+			}
+		}
+		element.first = endY * 100 * 100 + endM * 100 + 1;
+		element.second = endY * 100 * 100 + endM * 100 + endD;
+		res.push_back(element);
+	}
 	for(auto i = 0; i < res.size(); i++)
 	{
 		string endDay = int2str(res.at(i).second);
@@ -482,7 +509,7 @@ vector<pair<int, int>> timeRange2(int startY, int startM, int startD, int endY, 
 		else if(year != 2016 && month == 2)
 			res.at(i).second = year * 100 * 100 + month * 100 + 28;
 	}
-    return res;
+	return res;
 }
 
 int isValid(int yy, int mm, int dd) {

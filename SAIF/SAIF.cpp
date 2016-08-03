@@ -139,7 +139,7 @@ void anslyseAllTransactionsByMonth(THANDLE& hTdb, int year, int month)
 	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
 	{ 
 		allTransMap = GetAllTransactions(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), year, month);
-		anslyseAllTransactions(allTransMap, iter->stockCode);
+		anslyseAllTransactions(allTransMap, changeStockCode(iter->stockCode));
 		allTransMap.clear();
 	}
 	fcout.close();
@@ -166,7 +166,7 @@ void anslyseAllTransactionsByMonthTask3(THANDLE& hTdb, int year, int month)
 	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
 	{ 
 		allTransMap = GetAllTransactions(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), year, month);
-		
+
 		//获取last15和last30的数据
 		for(auto mapIter = allTransMap.begin(); mapIter != allTransMap.end(); mapIter++)
 		{
@@ -190,6 +190,93 @@ void anslyseAllTransactionsByMonthTask3(THANDLE& hTdb, int year, int month)
 	fcoutLast30.close();
 }
 
+
+
+
+void doTask1ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int date)
+{
+	string resultName = string(".\\task1\\") + string("transactionData") + int2str(date) + string(".txt");
+	//fstream fcout;
+	fcout.open(resultName, fstream::out);
+	writeFileHeaderForTask1(fcout);
+
+	vector<TDBDefine_Transaction> vec;
+	map<int, vector<TDBDefine_Transaction>> allTransMap;
+	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
+	{
+		vec = GetTransaction(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), date);
+		TDBDefine_Transaction tmp = vec[6604];
+		allTransMap[date] = vec;
+		anslyseAllTransactions(allTransMap, changeStockCode(iter->stockCode));
+		allTransMap.clear();
+	}
+	fcout.close();
+	printf("Finish task1: day=%d!\n", date);
+}
+
+void doTask2ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int date, int cycleNumber)
+{
+	char filename[100] = {'\0'};
+	sprintf(filename, ".\\task2\\kLineData%d(%dminutes).txt", date, cycleNumber);
+	fcout.open(string(filename), fstream::out);
+	fcout<<"WindCode;Date;Time;Open;Close;High;Low;Volume;Vmap"<<endl;
+
+	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++)
+	{
+		vector<TDBDefine_KLine> kDataVec= GetKData(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), date, date, CYC_MINUTE, cycleNumber, 0, 1);
+		printf("stock: %s, start: %d, end: %d, size: %d\n", (iter->stockCode).c_str(), date, date, kDataVec.size());
+		for (auto iter1 = kDataVec.begin(); iter1 != kDataVec.end(); iter1++) 
+		{
+			const TDBDefine_KLine& kline = *iter1;
+			double vMap = (kline.iVolume == 0) ? 0 : ((double)kline.iTurover/(double)kline.iVolume);
+			fcout<<changeStockCode(kline.chWindCode)<<";"<<kline.nDate<<";"<<kline.nTime<<";"<<kline.nOpen<<";"<<kline.nClose<<";"<<kline.nHigh<<";"<<kline.nLow<<";"<<kline.iVolume<<";"<<vMap<<endl;
+		}
+	}
+
+	fcout.close();
+		printf("Finish task2: day=%d!\n", date);
+}
+
+
+void doTask3ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int date)
+{
+	fstream fcoutLast15, fcoutLast30;
+	char last15ResultName[100] = {'\0'};
+	sprintf(last15ResultName, ".\\task3\\last15\\last15-%d.txt", date);
+	fcoutLast15.open(last15ResultName, fstream::out);
+	writeFileHeaderForTask1(fcoutLast15);
+
+	char last30ResultName[100] = {'\0'};
+	sprintf(last30ResultName, ".\\task3\\last30\\last30-%d.txt", date);
+	fcoutLast30.open(last30ResultName, fstream::out);
+	writeFileHeaderForTask1(fcoutLast30);
+
+	vector<TDBDefine_Transaction> vec;
+	map<int, vector<TDBDefine_Transaction>> last15transMap;
+	map<int, vector<TDBDefine_Transaction>> last30transMap;
+	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
+	{
+		vec = GetTransaction(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), date);
+		vector<TDBDefine_Transaction> last15;  //日
+		vector<TDBDefine_Transaction> last30;  //日
+
+		getLast15And30(vec, last15, last30);
+		last15transMap[date] = last15;
+		last30transMap[date] = last30;
+
+		anslyseAllTransactions(last15transMap, changeStockCode(iter->stockCode), fcoutLast15);
+		anslyseAllTransactions(last30transMap, changeStockCode(iter->stockCode), fcoutLast30);
+
+		vec.clear();
+		last15transMap.clear();
+		last30transMap.clear();
+	}
+	fcoutLast15.close(); fcoutLast30.close();
+	printf("Finish task3: day=%d!\n", date);
+}
+
+
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	string ipAddress = "114.80.154.34";
@@ -198,8 +285,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	string passWord  = "37264673";
 	THANDLE hTdb = logIn(ipAddress, port, userName, passWord);
 
-	GetAllStockTikers(allStockTikers, "ticker list.csv");
-
+	//GetAllStockTikers(allStockTikers, "ticker list.csv");
+	fstream fcin("ticker_list.txt", fstream::in);
+	if (!fcin.is_open())
+	{
+		cout<<"Cann't open ticker_list.txt"<<endl;
+		return -1;
+	}
+	string line;
+	while (getline(fcin, line))
+	{
+		StockTicker stockTiker;
+		stockTiker.stockCode = line;
+		allStockTikers.push_back(stockTiker);
+	}
 	InputParameter inputParameter = readInput();
 
 	if(hTdb)
@@ -226,7 +325,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					map<int, vector<TDBDefine_Transaction>> allTransMap;
 
 					allTransMap = GetAllTransactions(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), inputParameter.startYear, inputParameter.startMonth);
-					anslyseAllTransactions(allTransMap, iter->stockCode);
+					anslyseAllTransactions(allTransMap, changeStockCode(iter->stockCode));
 					allTransMap.clear();
 				}
 			}
@@ -243,21 +342,20 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else if (inputParameter.type == 4)
 		{
-			int date = inputParameter.startYear * 10000 + inputParameter.startMonth * 100 + inputParameter.startDay;
-			string resultName = string(".\\task1\\") + string("transactionData") + int2str(date) + string(".txt");
-			fcout.open(resultName, fstream::out);
-			writeFileHeaderForTask1(fcout);
+			int endYear  = inputParameter.endYear;
+			int endMonth = inputParameter.endMonth;
+			int endDay   = inputParameter.endDay;
 
-			vector<TDBDefine_Transaction> vec;
-			map<int, vector<TDBDefine_Transaction>> allTransMap;
-			for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
+			int startYear  = inputParameter.startYear;
+			int startMonth = inputParameter.startMonth;
+			int startDay   = inputParameter.startDay;
+
+			vector<int> timeVec = timeRange(startYear, startMonth, startDay, endYear, endMonth, endDay);
+
+			for(auto dayIter = timeVec.begin(); dayIter != timeVec.end(); dayIter++)
 			{
-				vec = GetTransaction(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), date);
-				allTransMap[date] = vec;
-				anslyseAllTransactions(allTransMap, iter->stockCode);
-				allTransMap.clear();
+				doTask1ByDay(hTdb, allStockTikers, *dayIter);
 			}
-			fcout.close();
 		}
 		else if (inputParameter.type == 5)
 		{
@@ -288,7 +386,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					{
 						const TDBDefine_KLine& kline = *iter1;
 						double vMap = (kline.iVolume == 0) ? 0 : ((double)kline.iTurover/(double)kline.iVolume);
-						fcout<<kline.chWindCode<<";"<<kline.nDate<<";"<<kline.nTime<<";"<<kline.nOpen<<";"<<kline.nClose<<";"<<kline.nHigh<<";"<<kline.nLow<<";"<<kline.iVolume<<";"<<vMap<<endl;
+						fcout<<changeStockCode(kline.chWindCode)<<";"<<kline.nDate<<";"<<kline.nTime<<";"<<kline.nOpen<<";"<<kline.nClose<<";"<<kline.nHigh<<";"<<kline.nLow<<";"<<kline.iVolume<<";"<<vMap<<endl;
 					}
 				}
 
@@ -302,6 +400,45 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				cout<<i<<" "<<timeVec.at(i).first<<" "<<timeVec.at(i).second<<endl;
 				anslyseAllTransactionsByMonthTask3(hTdb, timeVec.at(i).first, timeVec.at(i).second);
+			}
+		}
+		else if (inputParameter.type == 7)
+		{	
+			int endYear  = inputParameter.endYear;
+			int endMonth = inputParameter.endMonth;
+			int endDay   = inputParameter.endDay;
+
+			int startYear  = inputParameter.startYear;
+			int startMonth = inputParameter.startMonth;
+			int startDay   = inputParameter.startDay;
+
+			vector<int> timeVec = timeRange(startYear, startMonth, startDay, endYear, endMonth, endDay);
+
+			for(auto dayIter = timeVec.begin(); dayIter != timeVec.end(); dayIter++)
+			{
+				doTask3ByDay(hTdb, allStockTikers, *dayIter);
+			}
+
+		}
+		else if (inputParameter.type == 8)
+		{
+			int endYear  = inputParameter.endYear;
+			int endMonth = inputParameter.endMonth;
+			int endDay   = inputParameter.endDay;
+
+			int startYear  = inputParameter.startYear;
+			int startMonth = inputParameter.startMonth;
+			int startDay   = inputParameter.startDay;
+
+			int cycleNumber = inputParameter.cycleNumber;
+
+			vector<int> timeVec = timeRange(startYear, startMonth, startDay, endYear, endMonth, endDay);
+
+			for(auto dayIter = timeVec.begin(); dayIter != timeVec.end(); dayIter++)
+			{
+				doTask1ByDay(hTdb, allStockTikers, *dayIter);
+				doTask2ByDay(hTdb, allStockTikers, *dayIter, cycleNumber);
+				doTask3ByDay(hTdb, allStockTikers, *dayIter);
 			}
 		}
 	}
