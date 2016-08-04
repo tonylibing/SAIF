@@ -191,8 +191,6 @@ void anslyseAllTransactionsByMonthTask3(THANDLE& hTdb, int year, int month)
 }
 
 
-
-
 void doTask1ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int date)
 {
 	string resultName = string(".\\task1\\") + string("transactionData") + int2str(date) + string(".txt");
@@ -205,13 +203,13 @@ void doTask1ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int 
 	for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++) 
 	{
 		vec = GetTransaction(hTdb, (char*)(iter->stockCode).c_str(), (char*)(iter->stockType).c_str(), date);
-		TDBDefine_Transaction tmp = vec[6604];
+
 		allTransMap[date] = vec;
 		anslyseAllTransactions(allTransMap, changeStockCode(iter->stockCode));
 		allTransMap.clear();
 	}
 	fcout.close();
-	printf("Finish task1: day=%d!\n", date);
+	printf("Finish doTask1ByDay: day=%d!\n", date);
 }
 
 void doTask2ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int date, int cycleNumber)
@@ -234,7 +232,7 @@ void doTask2ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int 
 	}
 
 	fcout.close();
-		printf("Finish task2: day=%d!\n", date);
+	printf("Finish doTask2ByDay: day=%d!\n", date);
 }
 
 
@@ -272,7 +270,7 @@ void doTask3ByDay(THANDLE& hTdb, const vector<StockTicker>& allStockTikers, int 
 		last30transMap.clear();
 	}
 	fcoutLast15.close(); fcoutLast30.close();
-	printf("Finish task3: day=%d!\n", date);
+	printf("Finish doTask3ByDay: day=%d!\n", date);
 }
 
 
@@ -299,6 +297,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		stockTiker.stockCode = line;
 		allStockTikers.push_back(stockTiker);
 	}
+	printf("stock number is %d.\n", allStockTikers.size());
+
 	InputParameter inputParameter = readInput();
 
 	if(hTdb)
