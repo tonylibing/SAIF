@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <algorithm>
+#include <windows.h>
 #pragma warning(push) 
 #pragma warning(disable:4996) 
 

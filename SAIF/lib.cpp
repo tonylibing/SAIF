@@ -34,7 +34,7 @@ void usage() {
 	cout<<"5). 获取连续几天所有股票的K线数据, 例如(从2015/06/01到2016/01/31)"<<endl;
 	cout<<"6). 获取一段时间间隔的所有股票的(last 15 and 30 minutes before close)的逐笔成交数据, 例如(从2015年6月到2016年1月)"<<endl;
 	cout<<"7). 获取连续几天所有股票的(last 15 and 30 minutes before close)的逐笔成交数据, 例如(从2015/06/01到2015/06/10)"<<endl;
-//	cout<<"8). 获取连续几天所有股票的task1, task2, task3数据, 例如(从2015/06/01到2015/06/10)"<<endl;
+	cout<<"8). 获取连续几天所有股票的task1, task2, task3数据, 例如(从2015/06/01到2015/06/10)"<<endl;
 }
 InputParameter readInput() {
 	usage();
@@ -527,7 +527,12 @@ int isValid(int yy, int mm, int dd) {
 	}
 }
 
-
+string formatTime(const SYSTEMTIME& st)
+{
+	char str[10] = {'\0'};
+	sprintf(str, "%02d%02d%02d%03d", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+	return string(str);
+}
 vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycleType, int nCycleNumber, int nCQFlag, int nAutoComplete)
 {
 	//请求K线
@@ -539,7 +544,13 @@ vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int
 	req->nBeginDate = nBeginDate;//开始日期
 	req->nEndDate = nEndDate;//结束日期
 	req->nBeginTime = 0;//开始时间
-	req->nEndTime = 0;//结束时间
+
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+	if (nBeginDate == nEndDate && (10000 * st.wYear + 100 * st.wMonth + st.wDay == nBeginDate))
+		req->nEndTime = atoi(formatTime(st).c_str());//结束时间
+	else
+		req->nEndTime = 0;
 
 	req->nCycType = (CYCTYPE)nCycleType;
 	req->nCycDef = nCycleNumber;
