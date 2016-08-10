@@ -8,3 +8,4 @@
 
 2016/8/02   1   talk issue.
 2016/8/03   7   write code for add more options.
+2016/8/04   7   fix a bug, write code for option8, write user guide.

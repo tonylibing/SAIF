@@ -306,3 +306,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+
+.SAIF/task1/
+.SAIF/task2/
+.SAIF/task3/
