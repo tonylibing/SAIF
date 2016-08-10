@@ -194,7 +194,7 @@ void TaskHandle::doTask2ByDay(THANDLE& hTdb, int date, int cycleNumber)
 		}
 	}
 	fcout.close();
-	LOG_INFO<<"Finish doTask2ByDay: day="<<date;
+	LOG_INFO<<"Finish doTask2ByDay: day = "<<date;
 }
 
 void TaskHandle::doTask1ByDay(THANDLE& hTdb, int date)
