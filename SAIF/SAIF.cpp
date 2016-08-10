@@ -8,7 +8,6 @@
 #include "lib.h"
 #include <map>
 #include <set>
-#include <tuple>
 
 #include <Windows.h>
 #include <iostream>
