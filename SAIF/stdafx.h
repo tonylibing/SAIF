@@ -11,6 +11,18 @@
 #include <tchar.h>
 #include <algorithm>
 #include <windows.h>
+#include <string>
+
+#include "TDBAPI.h"
+
+#include "plog\Log.h"
+#include "plog\Appenders\ConsoleAppender.h"
+
+#include "NetWorkUtility.h"
+#include "TimeLib.h"
+#include "UserInterface.h"
+#include "TaskHandle.h"
+
 #pragma warning(push) 
 #pragma warning(disable:4996) 
 

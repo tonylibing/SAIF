@@ -63,12 +63,7 @@ static char ErrCode[100][10] = {0};
 string changeStockCode(string stockCode);
 string int2str(int n);
 string array2str(const int* arr, int len);
-int isValid(int yy, int mm, int dd);
-int getCurrentDay();
-void usage();
-InputParameter readInput();
 
-void writeFileHeaderForTask1(fstream& fcout);
 //获取所有证券的代码
 void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
 
@@ -76,25 +71,9 @@ void GetAllStockTikers(vector<StockTicker>& vec, const string& fileName);
 vector<TDBDefine_Code> GetCodeTable(THANDLE hTdb, char* szMarket);
 void StoreCodeTable(const vector<TDBDefine_Code> stockCodes, const string& fileName);
 
-//登录
-THANDLE logIn(const string& ipAddress, int port, const string& userName, const string& passWord);
 
 void showTranscation(const TDBDefine_Transaction& trans);
 void GetTickData(THANDLE hTdb, char* szCode, char* szMarket, int nDate);//带买卖盘的tick
 
-//获取指定天的所有每笔成交数据
-vector<TDBDefine_Transaction> GetTransaction(THANDLE hTdb, char* szCode, char* szMarketKey, int nDate);
-
-//获取自上市日起所有的逐笔成交
-map<int, vector<TDBDefine_Transaction>> GetAllTransactions(THANDLE hTdb, char* szCode, char* szMarketKey, int year, int month);
-
-vector<pair<int, int>> timeRange(int startY, int startM, int endY, int endM);
-vector<int> timeRange(int startY, int startM, int startD, int endY, int endM, int endD);
-vector<pair<int, int>> timeRange2(int startY, int startM, int startD, int endY, int endM, int endD);
-
-//请求K线
-vector<TDBDefine_KLine> GetKData(THANDLE hTdb, char* szCode, char* szMarket, int nBeginDate, int nEndDate, int nCycleType, int nCycleNumber, int nCQFlag, int nAutoComplete);
-
-void getLast15And30(const vector<TDBDefine_Transaction>& transVec, vector<TDBDefine_Transaction>& last15, vector<TDBDefine_Transaction>& last30);
 
 #endif
