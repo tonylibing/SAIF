@@ -30,10 +30,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	InputParameter inputParameter = UserInterface::readUserInput();
 	//GetAllStockTikers(allStockTikers, "ticker list.csv");
-	TaskHandle taskHandle(hTdb, pNetWorkInstane, inputParameter);
-
+	
 	if(hTdb)
 	{
+        TaskHandle taskHandle(hTdb, pNetWorkInstane, inputParameter);
+
 		if(inputParameter.type == 2)
 		{
 			taskHandle.option2();

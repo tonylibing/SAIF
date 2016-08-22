@@ -92,8 +92,9 @@ vector<pair<int, int>> TimeLib::dayRange2(const InputParameter& inputParameter)
 	}
 	else if (startY == endY && startM == endM) {
 		element.first = startY * 100 * 100 + startM * 100 + startD;
-		element.second = endY * 100 * 100 + endY * 100 + endD;
+		element.second = endY * 100 * 100 + endM * 100 + endD;
 		res.push_back(element);
+        return res;
 	} else if (startY == endY) {
 		element.first = startY * 100 * 100 + startM * 100 + startD;
 		element.second = startY * 100 * 100 + startM * 100 + 31;

@@ -92,6 +92,12 @@ void TaskHandle::option5()
 
 	int cycleNumber = inputParameter.cycleNumber;
 	vector<pair<int, int>> dayVec = TimeLib::dayRange2(inputParameter);
+    for(auto iter = dayVec.begin(); iter != dayVec.end(); ++iter)
+    {
+        pair<int, int> element = *iter;
+        LOG_INFO<<"dayRange2: from = {"<<element.first<<"}, end = {"<<element.second<<"}";
+    }
+
 	for(auto dayIter = dayVec.begin(); dayIter != dayVec.end(); dayIter++)
 	{
 		for (auto iter = allStockTikers.begin(); iter != allStockTikers.end(); iter++)
